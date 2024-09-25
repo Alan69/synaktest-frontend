@@ -1,0 +1,68 @@
+/* Quiz.module.css */
+
+.testPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 150px;
+    padding-bottom: 150px;
+  }
+  
+  .testContainer {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+  }
+  
+  .questionNav, .navigationButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .navButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .prevButton {
+    background-color: #ddd;
+  }
+  
+  .nextButton {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .questionButtons {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .questionBtn {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+  }
+  
+  .questionBtn.selected {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .content {
+    margin-top: 20px;
+  }
+  
+  .questionText {
+    margin-bottom: 20px;
+  }
+  
+  .answerOptions label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
