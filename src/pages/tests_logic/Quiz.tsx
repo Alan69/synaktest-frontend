@@ -14,6 +14,7 @@ const Quiz = () => {
 
   const { data: tests = [], isLoading: isTestsLoading } = useFetchTestsQuery(ids);
   const { data: questions = [], isLoading: isQuestionsLoading, refetch: refetchQuestions } = useFetchTestQuestionsQuery(tests.length ? tests[0].id : null, { skip: !tests.length });
+  // @ts-ignore
   const { data: options = [], isLoading: isOptionsLoading } = useFetchOptionsQuery();
   const [submitResult] = useSubmitResultMutation();
 

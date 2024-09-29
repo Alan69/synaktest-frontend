@@ -1,30 +1,30 @@
 import baseApi from ".";
 
 const testsApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
-    fetchTests: builder.query({
+  endpoints: (build) => ({
+    fetchTests: build.query({
       query: (testIds) => ({
         url: `tests/?product=${testIds.join(',')}`,
         method: 'GET'
       }),
     }),
-    fetchTestQuestions: builder.query({
+    fetchTestQuestions: build.query({
       query: (testId) => `questions/?test_id=${testId}`,
     }),
-    fetchOptions: builder.query({
+    fetchOptions: build.query({
       query: () => ({
         url: 'options/',
         method: 'GET'
       }),
     }),
-    submitResult: builder.mutation({
+    submitResult: build.mutation({
       query: (resultData) => ({
         url: `submit/`,
         method: 'POST',
         body: resultData,
       }),
     }),
-    fetchTestResults: builder.query({
+    fetchTestResults: build.query({
       query: (testId) => `results/${testId}/`,
     }),
   }),

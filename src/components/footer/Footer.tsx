@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import icon from 'assets/img/th-1/footer-text-slider-icon.svg'
+
 const Footer = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -11,7 +13,7 @@ const Footer = () => {
         <div className='overflow-hidden'>
           <div className='footer-text-slider flex w-full items-center gap-x-[30px] whitespace-nowrap'>
             <img
-              src='assets/img/th-1/footer-text-slider-icon.svg'
+              src={icon}
               alt='footer-text-slider-icon'
               width={60}
               height={60}
@@ -21,7 +23,7 @@ const Footer = () => {
               Начните своё будущее с нами!
             </div>
             <img
-              src='assets/img/th-1/footer-text-slider-icon.svg'
+              src={icon}
               alt='footer-text-slider-icon'
               width={60}
               height={60}
@@ -31,7 +33,7 @@ const Footer = () => {
               Начните своё будущее с нами!
             </div>
             <img
-              src='assets/img/th-1/footer-text-slider-icon.svg'
+              src={icon}
               alt='footer-text-slider-icon'
               width={60}
               height={60}
@@ -107,14 +109,6 @@ const Footer = () => {
                   className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
                 >
                   Вход
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to='/error-404'
-                  className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
-                >
-                  404 страница
                 </Link>
               </li>
               <li>

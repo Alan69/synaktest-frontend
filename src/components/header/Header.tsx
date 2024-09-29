@@ -1,72 +1,44 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../navbar/Navbar';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Logo from '../logo/Logo';
-import { useLogoutMutation } from '../../redux/api/authAPI';
+import Navbar from '../navbar/Navbar';
+import { useDispatch } from 'react-redux';
+import { useTypedSelector } from 'hooks/useTypedSelector';
+import { authActions } from 'modules/auth/redux/slices/authSlice';
+import { message } from 'antd';
 
-// @ts-ignore
-const Header = ({ loginCSS, signupCSS, navColor, light }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const Header = () => {
+  const dispatch = useDispatch();
+  const { token } = useTypedSelector((state) => state.auth);
+
   const [mobileMenu, setMobileMenu] = useState(false);
-  const navigate = useNavigate();
-
-  const [logout, { isLoading, isSuccess, isError }] = useLogoutMutation();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, []);
 
   const handleLogout = async () => {
-    const refreshToken = localStorage.getItem('refresh');
-
-    if (!refreshToken) {
-      console.error('No refresh token found.');
-      alert('Вы не авторизованы. Пожалуйста, войдите.');
-      navigate('/login');
-      return;
-    }
-
-    try {
-      const result = await logout(refreshToken);
-
-      if (result.data && result.data.status === 205) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh');
-        setIsAuthenticated(false);
-        navigate('/login');
-      } else {
-        console.error('Unexpected response:', result);
-        alert('Произошла ошибка при выходе.');
-      }
-    } catch (error) {
-      console.error('Error logging out:', error);
-      // @ts-ignore
-      alert(`Произошла ошибка при выходе: ${error.response?.data || error.message}`);
-    }
+    dispatch(authActions.logOut());
+    message.success('Logout successful!');
   };
 
   return (
     <header className='site-header site-header--absolute is--white py-3' id='sticky-menu'>
       <div className='global-container'>
         <div className='flex items-center justify-between gap-x-8'>
-          <Logo light={light} />
-          <Navbar mobileMenu={mobileMenu} setMobileMenu={setMobileMenu} color={navColor} />
+          <Logo />
+          <Navbar mobileMenu={mobileMenu} setMobileMenu={setMobileMenu} />
           <div className='flex items-center gap-6'>
-            {!isAuthenticated ? (
+            {!token ? (
               <>
-                <Link to='/login' className={loginCSS}>Войти</Link>
-                <Link to='/signup' className={signupCSS}>Регистрация</Link>
+                <Link to='/login' className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>Войти</Link>
+                <Link to='/signup' className='button hidden rounded-[50px] border-black bg-black text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>Регистрация</Link>
               </>
             ) : (
-              <button onClick={handleLogout} className={loginCSS} disabled={isLoading}>
-                {isLoading ? 'Выход...' : 'Выйти'}
+              <button onClick={handleLogout} className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>
+                Выйти
               </button>
             )}
             <div className='block lg:hidden'>
               <button
                 onClick={() => setMobileMenu(true)}
-                className={`mobile-menu-trigger ${light ? 'is-white' : 'is-black'}`}
+                className={`mobile-menu-trigger 'is-white'}`}
               >
                 <span />
               </button>

@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import swal from 'sweetalert';
 import iconWhiteCheckmarkFilled from '../../assets/img/th-1/icon-white-checkmark-filled.svg';
-import { useSignupMutation } from '../../redux/api/authAPI';
+import { useSignUpMutation } from 'modules/auth/redux/api';
+import { Form, message } from 'antd';
+import { useDispatch } from 'react-redux';
+import { authActions } from 'modules/auth/redux/slices/authSlice';
 
 const Signup = () => {
+  const dispatch = useDispatch();
+
   const [input, setInput] = useState({
     username: '',
     email: '',
@@ -14,7 +19,7 @@ const Signup = () => {
     check: false,
   });
 
-  const [signup, { isLoading }] = useSignupMutation(); // Используем RTK Query хук
+  const [signUp, { isLoading }] = useSignUpMutation();
 
   const handleInput = (e: any) => {
     setInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -24,29 +29,21 @@ const Signup = () => {
     setInput((prev) => ({ ...prev, check: value }));
   };
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
-    if (
-      input.username === '' ||
-      input.email === '' ||
-      input.first_name === '' ||
-      input.last_name === '' ||
-      input.password === ''
-    ) {
-      swal('Oops', 'Please fill all fields', 'error');
-      return;
-    }
-    if (!input.check) {
-      swal('Oops', 'Please accept the Terms & Conditions and Privacy Policy', 'error');
+  const onFinish = async (values: { email: string; password: string; password2: string }) => {
+    if (values.password !== values.password2) {
+      message.error('Пароли не совпадают!');
       return;
     }
 
     try {
-      const response = await signup(input).unwrap(); // Используем хук для регистрации
-      swal('Success', 'Account created successfully', 'success');
+      const response = await signUp({ ...values, first_name: 'Имя', last_name: 'Фамилия' });
+      // @ts-ignore
+      const { access: token, refresh: refreshToken } = response.data;
+
+      dispatch(authActions.setToken({ token, refreshToken }));
+      message.success('Регистрация успешна! Пожалуйста, войдите в систему.');
     } catch (error) {
-      swal('Error', 'Registration failed', 'error');
+      message.error('Ошибка регистрации. Пожалуйста, проверьте введенные данные.');
     }
   };
 
@@ -58,7 +55,7 @@ const Signup = () => {
             <div className='mx-auto max-w-[910px] text-center'>
               <h1 className='mb-[50px]'>Создать аккаунт</h1>
               <div className='block rounded-lg bg-white px-[30px] py-[50px] text-left shadow-[0_4px_60px_0_rgba(0,0,0,0.1)] sm:px-10'>
-                <form onSubmit={handleSubmit} className='flex flex-col gap-y-5'>
+                <Form onFinish={onFinish} className='flex flex-col gap-y-5'>
                   <div className='grid grid-cols-1 gap-6'>
                     <div className='flex flex-col gap-y-[10px]'>
                       <label htmlFor='signup-username' className='text-lg font-bold leading-[1.6]'>
@@ -166,7 +163,7 @@ const Signup = () => {
                   >
                     {isLoading ? 'Регистрация...' : 'Создать аккаунт'}
                   </button>
-                </form>
+                </Form>
                 <div className='mt-10 text-center'>
                   Уже есть аккаунт? &nbsp;
                   <Link to='/login' className='text-base font-semibold hover:text-colorOrangyRed'>
