@@ -4,9 +4,6 @@ import LoginPage from './modules/auth/pages/LoginPage';
 import Signup from './pages/common/Signup';
 import useJOSAnimation from './hooks/useJOSAnimation';
 import Profile from './pages/common/Profile';
-import Payment from './pages/common/Payment';
-import Test from './pages/common/Test';
-import Quiz from './pages/tests_logic/Quiz';
 import Home from 'pages/home/Home';
 import ResetPassword from 'pages/common/ResetPassword';
 import ProductDetailsPage from 'modules/product/pages/ProductDetailsPage/ProductDetailsPage';
@@ -15,12 +12,13 @@ import { useTypedSelector } from 'hooks/useTypedSelector';
 import MainLayout from 'components/layouts/MainLayout/MainLayout';
 import { UnauthorisedLayout } from 'components/layouts/UnauthorisedLayout/UnauthorisedLayout';
 import { message } from 'antd';
+import { CompletedTestDetailsPage } from 'modules/competed-test/pages/CompletedTestDetailsPage/CompletedTestDetailsPage';
 
 export const TimerContext = createContext<{
   timeLeft: number;
   formatTime: (seconds: number) => string;
   testIsStarted: boolean;
-  timerInitialized: boolean; // Добавляем состояние инициализации таймера
+  timerInitialized: boolean;
 } | null>(null);
 
 function App() {
@@ -30,10 +28,9 @@ function App() {
   const [getAuthUser] = useLazyGetAuthUserQuery();
   const { token } = useTypedSelector((state) => state.auth);
 
-  // Таймер и состояние теста
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [testIsStarted, setTestIsStarted] = useState<boolean>(false);
-  const [timerInitialized, setTimerInitialized] = useState<boolean>(false); // Новое состояние для отслеживания инициализации таймера
+  const [timerInitialized, setTimerInitialized] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -55,7 +52,6 @@ function App() {
       }
     }
 
-    // После инициализации установим флаг
     setTimerInitialized(true);
   }, []);
 
@@ -98,7 +94,7 @@ function App() {
 
   useEffect(() => {
     if (!token) {
-      // navigate('/login', { replace: true });
+      localStorage.clear()
     } else {
       getAuthUser();
     }
@@ -130,11 +126,9 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />
           <Route path='/home' element={<Home />} />
-          <Route path='profile' element={<Profile />} />
-          <Route path='payment' element={<Payment />} />
-          <Route path='test' element={<Test />} />
-          <Route path="/quiz/:testIds" element={<Quiz />} />
+          <Route path='/profile' element={<Profile />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/completed-test/:id" element={<CompletedTestDetailsPage />} />
           <Route path='*' element={<Home />} />
         </Route>
         <Route path="*" element={<Navigate to="/home" replace />} />

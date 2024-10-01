@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../logo/Logo';
 import Navbar from '../navbar/Navbar';
 import { useDispatch } from 'react-redux';
@@ -9,12 +9,14 @@ import { message } from 'antd';
 
 const Header = () => {
   const dispatch = useDispatch();
-  const { token } = useTypedSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { token, user } = useTypedSelector((state) => state.auth);
 
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const handleLogout = async () => {
     dispatch(authActions.logOut());
+    navigate('/home');
     message.success('Logout successful!');
   };
 
@@ -31,9 +33,15 @@ const Header = () => {
                 <Link to='/signup' className='button hidden rounded-[50px] border-black bg-black text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>Регистрация</Link>
               </>
             ) : (
-              <button onClick={handleLogout} className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>
-                Выйти
-              </button>
+              <>
+                {!user?.test_is_started ?
+                  <button
+                    onClick={handleLogout}
+                    className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>
+                    Выйти
+                  </button> : ''
+                }
+              </>
             )}
             <div className='block lg:hidden'>
               <button

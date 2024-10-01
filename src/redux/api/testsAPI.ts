@@ -2,15 +2,7 @@ import baseApi from ".";
 
 const testsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    fetchTests: build.query({
-      query: (testIds) => ({
-        url: `tests/?product=${testIds.join(',')}`,
-        method: 'GET'
-      }),
-    }),
-    fetchTestQuestions: build.query({
-      query: (testId) => `questions/?test_id=${testId}`,
-    }),
+
     fetchOptions: build.query({
       query: () => ({
         url: 'options/',
@@ -31,8 +23,6 @@ const testsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useFetchTestsQuery,
-  useFetchTestQuestionsQuery,
   useFetchOptionsQuery,
   useSubmitResultMutation,
   useFetchTestResultsQuery, 

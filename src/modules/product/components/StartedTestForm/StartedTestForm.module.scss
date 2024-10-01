@@ -39,6 +39,17 @@
                 rotate: 180deg;
             }
         }
+        &__finish {
+            background-color: #fff !important;
+            color: #3BC8B9 !important;
+        }
+        &__prenatallyFinish {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: #fff !important;
+            color: #3BC8B9 !important;
+        }
     }
 }
 
@@ -155,4 +166,8 @@
 .navigationButtons {
     display: flex;
     justify-content: space-between;
+}
+
+.unanswered {
+    border-color: red;
 }

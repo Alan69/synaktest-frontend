@@ -1,27 +1,35 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 import { message } from 'antd';
-import { useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation } from 'modules/product/redux/api';
+import { TQuestion, TTest, useCompleteTestMutation, useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation } from 'modules/product/redux/api';
 import { CustomCheckbox } from '../../../../components/CustomCheckbox/CustomCheckbox';
 import { ReactComponent as IconArrow } from 'assets/icons/arrow-left.svg';
 import styles from './ProductDetailsPage.module.scss';
 import StartedTestForm from 'modules/product/components/StartedTestForm/StartedTestForm';
+import { useTypedSelector } from 'hooks/useTypedSelector';
+import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 
-const MAX_SELECTION = 2;
+const MAX_SELECTION = 1;
 
 const ProductDetailsPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
+  const { user } = useTypedSelector((state) => state.auth);
 
   const { data: product, isLoading: isProductLoading } = useGetProductByIdQuery(id);
   const { data: subjectList, isLoading: isSubjectListLoading } = useGetSubjectListByProductIdQuery(product?.id);
+  const [getAuthUser] = useLazyGetAuthUserQuery();
   const [startTest] = useStartTestMutation();
+  const [completeTest, { isLoading: isCompleting }] = useCompleteTestMutation();
 
   const [title, setTitle] = useState('Купить продукт');
   const [selectedRequiredSubjects, setSelectedRequiredSubjects] = useState<{ [key: string]: boolean }>({});
   const [selectedSubjects, setSelectedSubjects] = useState<{ [key: string]: boolean }>({});
   const [testIsStarted, setTestIsStarted] = useState<boolean>(false);
+  const [unansweredQuestions, setUnansweredQuestions] = useState<{ testTitle: string; questionNumber: number; questionId: string }[]>([]);
+  const [isFinishTestModalOpen, setIsFinishTestModalOpen] = useState(false);
 
   const selectedCount = Object.values(selectedSubjects).filter(Boolean).length;
 
@@ -42,28 +50,92 @@ const ProductDetailsPage = () => {
         tests_ids,
       }).unwrap();
 
-      message.success('Тест успешно запущен');
-      product && setTitle(product?.title);
+      if (response) {
+        const authResponse = await getAuthUser().unwrap();
 
-      const serializedTests = JSON.stringify(response.tests);
-      localStorage.setItem('test', serializedTests);
-      localStorage.setItem('testResponse', JSON.stringify(response));
-      localStorage.setItem('testIsStarted', JSON.stringify(response.test_is_started));
+        if (authResponse) {
+          message.success('Тест успешно запущен');
+          product && setTitle(product?.title);
 
-      if (response.time) {
-        localStorage.setItem('testTime', JSON.stringify(response.time));
-        message.success('Время теста успешно сохранено в localStorage.');
+          const serializedTests = JSON.stringify(response.tests);
+          localStorage.setItem('test', serializedTests);
+          // @ts-ignore
+          localStorage.setItem('testIsStarted', JSON.stringify(authResponse.test_is_started));
+
+          if (response.time) {
+            localStorage.setItem('testTime', JSON.stringify(response.time));
+            message.success('Время теста успешно сохранено в localStorage.');
+          }
+
+          // @ts-ignore
+          setTestIsStarted(authResponse.test_is_started);
+
+          window.location.reload();
+        } else {
+          message.error('Не удалось получить данные пользователя.');
+        }
+      } else {
+        message.error('Не удалось получить ответ при запуске теста.');
       }
-
-      setTestIsStarted(response.test_is_started);
-
-      window.location.reload();
-
     } catch (error) {
       message.error('Ошибка при запуске теста.');
       console.error('Ошибка запуска теста:', error);
     }
   };
+
+  const handleCompleteTest = async () => {
+    try {
+      const serializedTests = localStorage.getItem('test');
+      const selectedAnswers = JSON.parse(localStorage.getItem('selectedAnswers') || '{}');
+
+      if (!serializedTests) {
+        message.error('Не удалось найти информацию о тестах.');
+        return;
+      }
+
+      const parsedTests = JSON.parse(serializedTests);
+
+      const tests: TTest[] = parsedTests.map((test: TTest) => ({
+        id: test.id,
+        questions: test.questions.map((question: TQuestion) => ({
+          id: question.id,
+          option_id: selectedAnswers[question.id] || undefined,
+        })),
+      }));
+
+      const completeTestRequest = {
+        product_id: id,
+        tests,
+      };
+
+      // @ts-ignore
+      const response = await completeTest(completeTestRequest).unwrap();
+
+      if (response) {
+        message.success('Тест успешно завершен.');
+
+        localStorage.removeItem('test');
+        localStorage.removeItem('selectedAnswers');
+        localStorage.removeItem('testTime');
+        localStorage.removeItem('testIsStarted');
+        localStorage.removeItem('remainingTime');
+
+        setIsFinishTestModalOpen(false);
+        // navigate(`/completed-test/${response.completed_test_id}`);
+        window.location.href = `/completed-test/${response.completed_test_id}`
+      } else {
+        message.error('Не удалось завершить тест.');
+      }
+    } catch (error) {
+      message.error('Ошибка при завершении теста.');
+      console.error('Ошибка завершения теста:', error);
+    }
+  };
+
+
+  const handleOpenFinistTestModal = () => {
+    setIsFinishTestModalOpen(true);
+  }
 
   const handleNext = () => {
     setTitle('Выбор теста');
@@ -109,84 +181,105 @@ const ProductDetailsPage = () => {
     }
   }, []);
 
+  // useEffect(() => {
+  //   if (user?.test_is_started) {
+  //     const currentPath = `/product/${id}`;
+  //     if (location.pathname !== currentPath) {
+  //       navigate(currentPath);
+  //     }
+  //   }
+  // }, [user, location, id, navigate]);
+
   if (isProductLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className={styles.body}>
-      <div className={styles.container}>
-        {testIsStarted ? '' : (
-          <>
-            <h2 className={styles.title}>{title}</h2>
-            <div className={styles.tabs}>
-              <div className={cn(styles.tabs__item, title === 'Купить продукт' ? styles.tabs__item__isActive : '')}>
-                <div className={styles.tabs__item__title}>Продукт</div>
-                <div className={styles.tabs__item__border} />
-              </div>
-              <div className={cn(styles.tabs__item, title === 'Выбор теста' ? styles.tabs__item__isActive : '')}>
-                <div className={styles.tabs__item__title}>Выбор теста</div>
-                <div className={styles.tabs__item__border} />
-              </div>
-            </div>
-          </>
-        )}
-        {testIsStarted ? <StartedTestForm /> : (
-          <div className={styles.testBlock}>
-            <div className={styles.testBlock__head}>
-              <div className={styles.testBlock__title}>
-                {title === 'Купить продукт' ? product?.title : 'Выберите предмет'}
-              </div>
-              {title === 'Купить продукт' && (
-                <div className={styles.testBlock__time}>
-                  <div className={styles.testBlock__time__label}>Время:</div>
-                  <div className={styles.testBlock__time__value}>{product?.time} мин.</div>
+    <>
+      <div className={styles.body}>
+        <div className={styles.container}>
+          {testIsStarted ? '' : (
+            <>
+              <h2 className={styles.title}>{title}</h2>
+              <div className={styles.tabs}>
+                <div className={cn(styles.tabs__item, title === 'Купить продукт' ? styles.tabs__item__isActive : '')}>
+                  <div className={styles.tabs__item__title}>Продукт</div>
+                  <div className={styles.tabs__item__border} />
                 </div>
-              )}
-            </div>
-            <div className={styles.testBlock__body}>
-              {title === 'Купить продукт' && (
-                <div className={styles.testBlock__subtitle}>Обязательные предметы:</div>
-              )}
-              <div className={styles.testBlock__checkboxes}>
-                {subjectList?.filter((filter) =>
-                  title === 'Купить продукт' ? filter.is_required : !filter.is_required
-                ).map((el) => (
-                  <div className={styles.testBlock__checkboxes__item} key={el.id}>
-                    <CustomCheckbox
-                      checked={title === 'Купить продукт' ? el.is_required : selectedSubjects[el.id]}
-                      title={el.title}
-                      onChange={handleCheckboxChange(el.id)}
-                    />
-                  </div>
-                ))}
+                <div className={cn(styles.tabs__item, title === 'Выбор теста' ? styles.tabs__item__isActive : '')}>
+                  <div className={styles.tabs__item__title}>Выбор теста</div>
+                  <div className={styles.tabs__item__border} />
+                </div>
               </div>
-            </div>
-            <button className={cn(styles.testBlock__button, styles.testBlock__button__back)} onClick={handleBack}>
-              <IconArrow />
-              Назад
-            </button>
-            {title === 'Купить продукт' ? (
-              <button
-                className={cn(styles.testBlock__button, styles.testBlock__button__next)}
-                onClick={handleNext}
-                disabled={isProductLoading || isSubjectListLoading}
-              >
-                Далее <IconArrow />
-              </button>
-            ) : (
-              <button
-                className={cn(styles.testBlock__button, styles.testBlock__button__start, selectedCount !== MAX_SELECTION ? styles.testBlock__button__disabled : '')}
-                onClick={handleStart}
-                disabled={isProductLoading || isSubjectListLoading}
-              >
-                Начать
-              </button>
+            </>
+          )}
+          {testIsStarted ?
+            <StartedTestForm
+              handleOpenFinistTestModal={handleOpenFinistTestModal}
+              unansweredQuestions={unansweredQuestions}
+              setUnansweredQuestions={setUnansweredQuestions}
+              isFinishTestModalOpen={isFinishTestModalOpen}
+              setIsFinishTestModalOpen={setIsFinishTestModalOpen}
+              handleCompleteTest={handleCompleteTest}
+              isCompleting={isCompleting}
+            />
+            : (
+              <div className={styles.testBlock}>
+                <div className={styles.testBlock__head}>
+                  <div className={styles.testBlock__title}>
+                    {title === 'Купить продукт' ? product?.title : 'Выберите предмет'}
+                  </div>
+                  {title === 'Купить продукт' && (
+                    <div className={styles.testBlock__time}>
+                      <div className={styles.testBlock__time__label}>Время:</div>
+                      <div className={styles.testBlock__time__value}>{product?.time} мин.</div>
+                    </div>
+                  )}
+                </div>
+                <div className={styles.testBlock__body}>
+                  {title === 'Купить продукт' && (
+                    <div className={styles.testBlock__subtitle}>Обязательные предметы:</div>
+                  )}
+                  <div className={styles.testBlock__checkboxes}>
+                    {subjectList?.filter((filter) =>
+                      title === 'Купить продукт' ? filter.is_required : !filter.is_required
+                    ).map((el) => (
+                      <div className={styles.testBlock__checkboxes__item} key={el.id}>
+                        <CustomCheckbox
+                          checked={title === 'Купить продукт' ? el.is_required : selectedSubjects[el.id]}
+                          title={el.title}
+                          onChange={handleCheckboxChange(el.id)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button className={cn(styles.testBlock__button, styles.testBlock__button__back)} onClick={handleBack}>
+                  <IconArrow />
+                  Назад
+                </button>
+                {title === 'Купить продукт' ? (
+                  <button
+                    className={cn(styles.testBlock__button, styles.testBlock__button__next)}
+                    onClick={handleNext}
+                    disabled={isProductLoading || isSubjectListLoading}
+                  >
+                    Далее <IconArrow />
+                  </button>
+                ) : (
+                  <button
+                    className={cn(styles.testBlock__button, styles.testBlock__button__start, selectedCount !== MAX_SELECTION ? styles.testBlock__button__disabled : '')}
+                    onClick={handleStart}
+                    disabled={isProductLoading || isSubjectListLoading}
+                  >
+                    Начать
+                  </button>
+                )}
+              </div>
             )}
-          </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

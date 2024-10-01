@@ -1,3 +1,4 @@
+import { useTypedSelector } from 'hooks/useTypedSelector';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,6 +8,8 @@ type TProps = {
 }
 
 const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
+  const { token, user } = useTypedSelector((state) => state.auth);
+
   const [mobileSubMenu, setMobileSubMenu] = useState('');
   const [mobileSubMenuSub, setMobileSubMenuSub] = useState('');
 
@@ -53,7 +56,7 @@ const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
         </div>
         <ul className={`site-menu-main`}>
           <li className='nav-item'>
-            <Link to='/' className='nav-link-item'>
+            <Link to='/' className='nav-link-item' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }} onClick={handleMenu}>
               Главная
             </Link>
           </li>
@@ -68,7 +71,7 @@ const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
             </Link>
           </li> */}
           <li className='nav-item'>
-            <Link to='/profile' className='nav-link-item'>
+            <Link to={token ? '/profile' : '/login'} className='nav-link-item' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }} onClick={handleMenu}>
               Профиль
             </Link>
           </li>

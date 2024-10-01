@@ -41,6 +41,21 @@ export type TStartTestResponse = {
   tests: TTest[];
 }
 
+export type TCompleteTestRequest = {
+  product_id: string;
+  tests: {
+    id: string;
+    questions: {
+      id: string;
+      option_id: string
+    }[]
+  }[]
+}
+
+export type TCompleteTestResponse = {
+  completed_test_id: string;
+}
+
 export const productApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getProductList: build.query<TProductResponse[], void>({
@@ -52,7 +67,7 @@ export const productApi = baseApi.injectEndpoints({
     }),
     getProductById: build.query<TProductResponse, string | undefined>({
 			query: (id) => ({
-				url: `products/${id}/`,
+				url: `/products/${id}/`,
 				method: 'GET'
 			}),
 			transformResponse: (response: TProductResponse) => response,
@@ -75,9 +90,20 @@ export const productApi = baseApi.injectEndpoints({
 			}),
 			transformResponse: (response: TStartTestResponse) => response,
     }),
+    completeTest: build.mutation<TCompleteTestResponse, TCompleteTestRequest>({
+			query: ({product_id, tests}) => ({
+				url: '/complete/test/',
+				method: 'POST',
+        body: {
+          product_id,
+          tests
+        }
+			}),
+			transformResponse: (response: TCompleteTestResponse) => response,
+    }),
 
   }),
 	overrideExisting: false,
 });
 
-export const { useGetProductListQuery, useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation } = productApi;
+export const { useGetProductListQuery, useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation, useCompleteTestMutation } = productApi;

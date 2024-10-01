@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import swal from 'sweetalert';
 import iconWhiteCheckmarkFilled from '../../assets/img/th-1/icon-white-checkmark-filled.svg';
 import { useSignUpMutation } from 'modules/auth/redux/api';
 import { Form, message } from 'antd';
@@ -159,7 +158,7 @@ const Signup = () => {
                   <button
                     type='submit'
                     className='button mt-7 block rounded-[50px] border-2 border-black bg-black py-4 text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white'
-                    disabled={isLoading} // Делаем кнопку недоступной во время загрузки
+                    disabled={isLoading}
                   >
                     {isLoading ? 'Регистрация...' : 'Создать аккаунт'}
                   </button>

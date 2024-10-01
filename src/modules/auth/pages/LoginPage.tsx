@@ -58,7 +58,7 @@ const LoginPage = () => {
                       name="password"
                       rules={[{ required: true, message: 'Пожалуйста, введите пароль!' }]}
                     >
-                      {/* <div className='flex flex-col gap-y-[10px]'>
+                      <div className='flex flex-col gap-y-[10px]'>
                         <label htmlFor='login-password' className='text-lg font-bold leading-[1.6]'>
                           Пароль
                         </label>
@@ -67,19 +67,14 @@ const LoginPage = () => {
                           placeholder='Пароль'
                           className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorOrangyRed'
                         />
-                      </div> */}
-                      <Input.Password
-                        type='password'
-                        placeholder='Пароль'
-                        className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorOrangyRed'
-                      />
+                      </div>
 
                     </Form.Item>
 
                     <Form.Item>
                       <button
                         type="submit"
-                        className='button mt-7 block rounded-[50px] border-2 border-black bg-black py-4 text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white'
+                        className='button w-full justify-center rounded-[50px] border-2 border-black bg-black text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white'
                         disabled={isLoading}
                       >
                         {isLoading ? 'Вход...' : 'Войти'}
@@ -93,9 +88,7 @@ const LoginPage = () => {
                     </div>
                   </div>
 
-
-
-                  <div className='mt-10 text-center'>
+                  <div className='text-center'>
                     Нет аккаунта? &nbsp;
                     <Link to='/signup' className='text-base font-semibold hover:text-colorOrangyRed'>
                       Зарегистрироваться

@@ -6,7 +6,6 @@ const ResultPage = () => {
   const { testId } = useParams();
   const [showModal, setShowModal] = useState(false);
 
-  // Используем хук для получения данных о результатах
   const { data: resultData, isLoading, error } = useFetchTestResultsQuery(testId);
 
   if (isLoading) return <div>Loading...</div>;

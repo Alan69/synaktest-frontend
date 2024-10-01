@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
-import { TUserData } from '../../../user/redux/slices/api';
+import { TUser } from '../../../user/redux/slices/api';
 
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
-  user: TUserData | null;
+  user: TUser | null;
 }
 
 const initialState: AuthState = {
@@ -32,7 +32,7 @@ const authSlice = createSlice({
         Cookies.set('refreshToken', refreshToken, { expires: 7 });
       }
     },
-    setUser: (state, { payload }: PayloadAction<TUserData | null>) => {
+    setUser: (state, { payload }: PayloadAction<TUser | null>) => {
       state.user = payload;
     },
     logOut: (state) => {
