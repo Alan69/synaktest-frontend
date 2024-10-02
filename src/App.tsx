@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, createContext } from 'react';
+import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './modules/auth/pages/LoginPage';
 import Signup from './pages/common/Signup';
@@ -13,12 +13,15 @@ import MainLayout from 'components/layouts/MainLayout/MainLayout';
 import { UnauthorisedLayout } from 'components/layouts/UnauthorisedLayout/UnauthorisedLayout';
 import { message } from 'antd';
 import { CompletedTestDetailsPage } from 'modules/competed-test/pages/CompletedTestDetailsPage/CompletedTestDetailsPage';
+import { TQuestion, TTest, useCompleteTestMutation } from 'modules/product/redux/api';
 
 export const TimerContext = createContext<{
   timeLeft: number;
   formatTime: (seconds: number) => string;
   testIsStarted: boolean;
   timerInitialized: boolean;
+  handleCompleteTest?: () => Promise<void>;
+  isCompleting: boolean
 } | null>(null);
 
 function App() {
@@ -27,11 +30,58 @@ function App() {
   const navigate = useNavigate();
   const [getAuthUser] = useLazyGetAuthUserQuery();
   const { token } = useTypedSelector((state) => state.auth);
+  const [completeTest, { isLoading: isCompleting }] = useCompleteTestMutation();
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [testIsStarted, setTestIsStarted] = useState<boolean>(false);
   const [timerInitialized, setTimerInitialized] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleCompleteTest = useCallback(async () => {
+    try {
+      const serializedTests = localStorage.getItem('test');
+      const selectedAnswers = JSON.parse(localStorage.getItem('selectedAnswers') || '{}');
+      const productId = localStorage.getItem('product_id');
+
+      if (!serializedTests) {
+        message.error('Не удалось найти информацию о тестах.');
+        return;
+      }
+
+      const parsedTests = JSON.parse(serializedTests);
+
+      const tests: TTest[] = parsedTests.map((test: TTest) => ({
+        id: test.id,
+        questions: test.questions.map((question: TQuestion) => ({
+          id: question.id,
+          option_id: selectedAnswers[question.id] || null,
+        })),
+      }));
+
+      const completeTestRequest = {
+        product_id: productId,
+        tests,
+      };
+
+      // @ts-ignore
+      const response = await completeTest(completeTestRequest).unwrap();
+
+      if (response) {
+        message.success('Тест успешно завершен.');
+        localStorage.clear();
+        // @ts-ignore
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        window.location.href = `/completed-test/${response.completed_test_id}`;
+      } else {
+        message.error('Не удалось завершить тест.');
+      }
+    } catch (error) {
+      message.error('Ошибка при завершении теста.');
+      console.error('Ошибка завершения теста:', error);
+    }
+  }, []);
+
 
   useEffect(() => {
     const savedTestIsStarted = localStorage.getItem('testIsStarted');
@@ -64,13 +114,16 @@ function App() {
           if (updatedTime <= 0) {
             clearInterval(intervalRef.current as NodeJS.Timeout);
             intervalRef.current = null;
+            localStorage.removeItem('remainingTime');
             message.warning('Время вышло!');
+            handleCompleteTest();
           }
           return updatedTime;
         });
       }, 1000);
     }
   };
+
 
   useEffect(() => {
     if (timerInitialized) {
@@ -83,7 +136,7 @@ function App() {
         intervalRef.current = null;
       }
     };
-  }, [timeLeft, testIsStarted, timerInitialized]);
+  }, [timeLeft, testIsStarted, timerInitialized, handleCompleteTest]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -121,7 +174,7 @@ function App() {
   }
 
   return (
-    <TimerContext.Provider value={{ timeLeft, formatTime, testIsStarted, timerInitialized }}>
+    <TimerContext.Provider value={{ timeLeft, formatTime, testIsStarted, timerInitialized, handleCompleteTest, isCompleting }}>
       <Routes>
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />

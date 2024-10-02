@@ -1,28 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import cn from 'classnames';
 import { message } from 'antd';
-import { TQuestion, TTest, useCompleteTestMutation, useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation } from 'modules/product/redux/api';
+import { useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation } from 'modules/product/redux/api';
 import { CustomCheckbox } from '../../../../components/CustomCheckbox/CustomCheckbox';
 import { ReactComponent as IconArrow } from 'assets/icons/arrow-left.svg';
 import styles from './ProductDetailsPage.module.scss';
 import StartedTestForm from 'modules/product/components/StartedTestForm/StartedTestForm';
-import { useTypedSelector } from 'hooks/useTypedSelector';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 
 const MAX_SELECTION = 1;
 
 const ProductDetailsPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { id } = useParams();
-  const { user } = useTypedSelector((state) => state.auth);
 
   const { data: product, isLoading: isProductLoading } = useGetProductByIdQuery(id);
   const { data: subjectList, isLoading: isSubjectListLoading } = useGetSubjectListByProductIdQuery(product?.id);
   const [getAuthUser] = useLazyGetAuthUserQuery();
   const [startTest] = useStartTestMutation();
-  const [completeTest, { isLoading: isCompleting }] = useCompleteTestMutation();
 
   const [title, setTitle] = useState('Купить продукт');
   const [selectedRequiredSubjects, setSelectedRequiredSubjects] = useState<{ [key: string]: boolean }>({});
@@ -59,6 +55,7 @@ const ProductDetailsPage = () => {
 
           const serializedTests = JSON.stringify(response.tests);
           localStorage.setItem('test', serializedTests);
+          localStorage.setItem('product_id', id || '');
           // @ts-ignore
           localStorage.setItem('testIsStarted', JSON.stringify(authResponse.test_is_started));
 
@@ -82,56 +79,6 @@ const ProductDetailsPage = () => {
       console.error('Ошибка запуска теста:', error);
     }
   };
-
-  const handleCompleteTest = async () => {
-    try {
-      const serializedTests = localStorage.getItem('test');
-      const selectedAnswers = JSON.parse(localStorage.getItem('selectedAnswers') || '{}');
-
-      if (!serializedTests) {
-        message.error('Не удалось найти информацию о тестах.');
-        return;
-      }
-
-      const parsedTests = JSON.parse(serializedTests);
-
-      const tests: TTest[] = parsedTests.map((test: TTest) => ({
-        id: test.id,
-        questions: test.questions.map((question: TQuestion) => ({
-          id: question.id,
-          option_id: selectedAnswers[question.id] || undefined,
-        })),
-      }));
-
-      const completeTestRequest = {
-        product_id: id,
-        tests,
-      };
-
-      // @ts-ignore
-      const response = await completeTest(completeTestRequest).unwrap();
-
-      if (response) {
-        message.success('Тест успешно завершен.');
-
-        localStorage.removeItem('test');
-        localStorage.removeItem('selectedAnswers');
-        localStorage.removeItem('testTime');
-        localStorage.removeItem('testIsStarted');
-        localStorage.removeItem('remainingTime');
-
-        setIsFinishTestModalOpen(false);
-        // navigate(`/completed-test/${response.completed_test_id}`);
-        window.location.href = `/completed-test/${response.completed_test_id}`
-      } else {
-        message.error('Не удалось завершить тест.');
-      }
-    } catch (error) {
-      message.error('Ошибка при завершении теста.');
-      console.error('Ошибка завершения теста:', error);
-    }
-  };
-
 
   const handleOpenFinistTestModal = () => {
     setIsFinishTestModalOpen(true);
@@ -181,14 +128,6 @@ const ProductDetailsPage = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (user?.test_is_started) {
-  //     const currentPath = `/product/${id}`;
-  //     if (location.pathname !== currentPath) {
-  //       navigate(currentPath);
-  //     }
-  //   }
-  // }, [user, location, id, navigate]);
 
   if (isProductLoading) {
     return <div>Loading...</div>;
@@ -220,8 +159,6 @@ const ProductDetailsPage = () => {
               setUnansweredQuestions={setUnansweredQuestions}
               isFinishTestModalOpen={isFinishTestModalOpen}
               setIsFinishTestModalOpen={setIsFinishTestModalOpen}
-              handleCompleteTest={handleCompleteTest}
-              isCompleting={isCompleting}
             />
             : (
               <div className={styles.testBlock}>

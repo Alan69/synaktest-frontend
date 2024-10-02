@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import cn from 'classnames'
 
 import icon from 'assets/img/th-1/footer-text-slider-icon.svg'
+
+import styles from './Footer.module.scss'
 
 const Footer = () => {
   const handleSubmit = (e: any) => {
@@ -8,8 +11,8 @@ const Footer = () => {
   };
 
   return (
-    <footer className='relative z-[1] -mt-[70px] overflow-hidden rounded-tl-[30px] rounded-tr-[30px] bg-colorLinenRuffle lg:rounded-tl-[50px] lg:rounded-tr-[50px]'>
-      <div className='py-[60px] xl:pb-[100px] xl:pt-[130px]'>
+    <footer className={cn('z-[1] relative overflow-hidden rounded-tl-[30px] rounded-tr-[30px] bg-colorLinenRuffle lg:rounded-tl-[50px] lg:rounded-tr-[50px]', styles.footer)}>
+      <div className='py-[30px] xl:pb-[60px] xl:pt-[65px]'>
         <div className='overflow-hidden'>
           <div className='footer-text-slider flex w-full items-center gap-x-[30px] whitespace-nowrap'>
             <img
@@ -47,7 +50,7 @@ const Footer = () => {
       </div>
       <div className='global-container'>
         <div className='h-[1px] w-full bg-[#DBD6CF]' />
-        <div className='lg grid grid-cols-1 gap-10 py-[60px] md:grid-cols-[1fr_auto_auto] xl:grid-cols-[1fr_auto_auto_1fr] xl:gap-20 xl:py-[100px]'>
+        <div className='lg grid grid-cols-1 gap-10 py-[30px] md:grid-cols-[1fr_auto_auto] xl:grid-cols-[1fr_auto_auto_1fr] xl:gap-20 xl:py-[50px]'>
           <div className='flex flex-col gap-y-6'>
             <Link to='/' className='inline-block'>
               <img

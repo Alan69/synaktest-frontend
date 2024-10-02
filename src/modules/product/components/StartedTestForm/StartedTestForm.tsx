@@ -20,8 +20,6 @@ type TProps = {
   }[]>>
   isFinishTestModalOpen: boolean
   setIsFinishTestModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  handleCompleteTest: () => Promise<void>
-  isCompleting: boolean
 }
 
 const StartedTestForm = ({
@@ -30,11 +28,9 @@ const StartedTestForm = ({
   setUnansweredQuestions,
   isFinishTestModalOpen,
   setIsFinishTestModalOpen,
-  handleCompleteTest,
-  isCompleting
 }: TProps) => {
   // @ts-ignore
-  const { timeLeft, formatTime, testIsStarted, timerInitialized } = useContext(TimerContext);
+  const { timeLeft, formatTime, testIsStarted, timerInitialized, handleCompleteTest, isCompleting } = useContext(TimerContext);
   const testDataFromLocalStorage = localStorage.getItem('test');
   const parsedData = testDataFromLocalStorage ? JSON.parse(testDataFromLocalStorage) : [];
 
