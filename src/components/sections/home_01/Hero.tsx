@@ -18,12 +18,12 @@ const Hero = () => {
                 Synaqtest — это образовательная компания, которая использует ИИ в тестах, чтобы помочь людям эффективно учиться. Мы предоставляем самые передовые технологии и лучшие решения для обучения.
               </p>
               <div className='jos flex flex-wrap justify-center gap-6' data-jos_animation='fade'>
-                <Link
+                {/* <Link
                   to='/payment'
                   className='button rounded-[50px] border-2 border-[#2124B1] bg-[#2124B1] py-4 text-white after:bg-[#2124B1] hover:border-[#2124B1] hover:text-white'
                 >
                   Попробовать
-                </Link>
+                </Link> */}
                 {/* <Link
                   to='/about'
                   className='button rounded-[50px] border-2 border-[#2124B1] bg-transparent py-4 text-black after:bg-[#2124B1] hover:border-[#2124B1] hover:text-white'

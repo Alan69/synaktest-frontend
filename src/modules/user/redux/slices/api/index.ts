@@ -16,33 +16,65 @@ export type TUser = {
 }
 
 export type TUserData = {
-  user_data: TUserData
+  user_data: TUser;
+};
+
+export type TChangePasswordRequest = {
+  current_password: string;
+  new_password: string
+  new_password2: string
+}
+
+export type TChangePasswordResponse = {
+  new_password: string;
+  refresh: string
+  access: string
 }
 
 export const userApi = baseApi.injectEndpoints({
-	endpoints: (build) => ({
-    getAuthUser: build.query<TUserData, void>({
+  endpoints: (build) => ({
+    getAuthUser: build.query<TUser, void>({
       query: () => ({
         url: '/user/auth/',
-          method: 'GET'
-        }),
+        method: 'GET',
+      }),
       transformResponse: (response: TUserData) => response.user_data,
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // @ts-ignore
-          dispatch(authActions.setUser(data));
+          dispatch(authActions.setUser(data)); 
         } catch (err) {
           console.error('Failed to fetch user data', err);
         }
       },
     }),
-
-	}),
-	overrideExisting: false,
+    updateUserProfile: build.mutation({
+      query: (updatedData) => ({
+        url: '/user/',
+        method: 'PUT',
+        body: updatedData,
+      }),
+    }),
+    changePassword: build.mutation<TChangePasswordResponse, TChangePasswordRequest>({
+      query: ({ current_password, new_password, new_password2 }) => ({
+        url: '/change/password/',
+        method: 'POST',
+        body: {
+          current_password,
+          new_password,
+          new_password2,
+        },
+      }),
+      transformResponse: (response: TChangePasswordResponse) => response,
+      extraOptions: { showErrors: false },
+    }),
+  }),
+  overrideExisting: false,
 });
 
 export const {
   useLazyGetAuthUserQuery,
   useGetAuthUserQuery,
+  useUpdateUserProfileMutation,
+  useChangePasswordMutation
 } = userApi;

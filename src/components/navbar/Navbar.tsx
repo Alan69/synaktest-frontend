@@ -56,12 +56,15 @@ const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
         </div>
         <ul className={`site-menu-main`}>
           <li className='nav-item'>
-            <Link to='/' className='nav-link-item' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }} onClick={handleMenu}>
+            {/* <Link to='/' className='nav-link-item' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }} onClick={handleMenu}>
+              Главная
+            </Link> */}
+            <Link to='/' className='nav-link-item' onClick={handleMenu}>
               Главная
             </Link>
           </li>
           <li className='nav-item'>
-            <Link to={token ? '/profile' : '/login'} className='nav-link-item' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }} onClick={handleMenu}>
+            <Link to={token ? '/profile' : '/login'} className='nav-link-item' onClick={handleMenu}>
               Профиль
             </Link>
           </li>

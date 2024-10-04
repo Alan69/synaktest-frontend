@@ -3,7 +3,6 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import LoginPage from './modules/auth/pages/LoginPage';
 import Signup from './pages/common/Signup';
 import useJOSAnimation from './hooks/useJOSAnimation';
-import Profile from './pages/common/Profile';
 import Home from 'pages/home/Home';
 import ResetPassword from 'pages/common/ResetPassword';
 import ProductDetailsPage from 'modules/product/pages/ProductDetailsPage/ProductDetailsPage';
@@ -15,6 +14,7 @@ import { message } from 'antd';
 import { CompletedTestDetailsPage } from 'modules/competed-test/pages/CompletedTestDetailsPage/CompletedTestDetailsPage';
 import { TQuestion, TTest, useCompleteTestMutation } from 'modules/product/redux/api';
 import { CompletedTestListPage } from './modules/competed-test/pages/CompletedTestListPage/CompletedTestListPage';
+import ProfilePage from 'modules/user/pages/ProfilePage';
 
 export const TimerContext = createContext<{
   timeLeft: number;
@@ -180,7 +180,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />
           <Route path='/home' element={<Home />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/profile' element={<ProfilePage />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
           <Route path="/completed-test/list" element={<CompletedTestListPage />} />
           <Route path="/completed-test/:id" element={<CompletedTestDetailsPage />} />

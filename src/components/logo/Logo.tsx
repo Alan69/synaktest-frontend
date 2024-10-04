@@ -4,16 +4,19 @@ import logoLight from 'assets/img/logo-light.png';
 import { useTypedSelector } from 'hooks/useTypedSelector';
 
 const LogoDark = () => {
-  const { user } = useTypedSelector((state) => state.auth);
+  // const { user } = useTypedSelector((state) => state.auth);
 
   return (
-    <Link to='/' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }}>
+    <Link
+      to='/'
+    // style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }}
+    >
       <img
         src={logoDark}
         alt='AIMass'
         width='96'
         height='24'
-        style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }}
+      // style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }}
       />
     </Link>
   );

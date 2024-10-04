@@ -13,7 +13,7 @@
         box-shadow: rgba(145, 158, 171, 0.12) 0px 1px 2px;
         border-radius: 16px;
         &__title {
-            width: calc(60% - 8px);
+            width: calc(40% - 8px);
             font-weight: 600;
             font-size: 18px;
             line-height: 140%;
@@ -21,7 +21,7 @@
             color: rgb(29, 30, 28);
         }
         &__additional {
-            width: calc(40% - 8px);
+            width: calc(60% - 8px);
             display: flex;
             justify-content: space-between;
             align-items: center;

@@ -8,13 +8,6 @@ const profileApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
-    updateUserProfile: build.mutation({
-      query: (updatedData) => ({
-        url: '/user/',
-        method: 'PUT',
-        body: updatedData,
-      }),
-    }),
     addBalance: build.mutation({
       query: () => ({
         url: '/payments/add-balance/',
@@ -24,4 +17,4 @@ const profileApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetUserProfileQuery, useUpdateUserProfileMutation, useAddBalanceMutation } = profileApi;
+export const { useGetUserProfileQuery, useAddBalanceMutation } = profileApi;
