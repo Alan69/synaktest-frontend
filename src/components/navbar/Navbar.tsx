@@ -31,7 +31,7 @@ const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
   };
 
   return (
-    <div className='menu-block-wrapper'>
+    <div className='flex justify-center'>
       <div
         onClick={handleMenu}
         className={`menu-overlay ${mobileMenu && 'active'}`}
@@ -60,21 +60,21 @@ const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
               Главная
             </Link>
           </li>
-          {/* <li className='nav-item'>
-            <Link to='/about' className='nav-link-item'>
-              О нас
-            </Link>
-          </li> */}
-          {/* <li className='nav-item'>
-            <Link to='/contact' className='nav-link-item'>
-              Контакты
-            </Link>
-          </li> */}
           <li className='nav-item'>
             <Link to={token ? '/profile' : '/login'} className='nav-link-item' style={{ pointerEvents: user?.test_is_started ? 'none' : 'unset' }} onClick={handleMenu}>
               Профиль
             </Link>
           </li>
+          <li className='nav-item'>
+            <Link to='/completed-test/list' className='nav-link-item'>
+              Результаты
+            </Link>
+          </li>
+          {/* <li className='nav-item'>
+            <Link to='/contact' className='nav-link-item'>
+              Контакты
+            </Link>
+          </li> */}
         </ul>
       </nav>
     </div>

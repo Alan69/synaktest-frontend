@@ -14,6 +14,7 @@ import { UnauthorisedLayout } from 'components/layouts/UnauthorisedLayout/Unauth
 import { message } from 'antd';
 import { CompletedTestDetailsPage } from 'modules/competed-test/pages/CompletedTestDetailsPage/CompletedTestDetailsPage';
 import { TQuestion, TTest, useCompleteTestMutation } from 'modules/product/redux/api';
+import { CompletedTestListPage } from './modules/competed-test/pages/CompletedTestListPage/CompletedTestListPage';
 
 export const TimerContext = createContext<{
   timeLeft: number;
@@ -181,6 +182,7 @@ function App() {
           <Route path='/home' element={<Home />} />
           <Route path='/profile' element={<Profile />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/completed-test/list" element={<CompletedTestListPage />} />
           <Route path="/completed-test/:id" element={<CompletedTestDetailsPage />} />
           <Route path='*' element={<Home />} />
         </Route>

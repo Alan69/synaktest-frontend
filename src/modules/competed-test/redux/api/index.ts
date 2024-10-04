@@ -4,7 +4,7 @@ export interface TTestResponse {
   id: string
   user: TUser
   product: Troduct
-  completed_at: string
+  completed_date: string
   completed_questions: TCompletedQuestion[]
 }
 
