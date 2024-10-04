@@ -60,7 +60,7 @@ export const CompletedTestDetailsPage = () => {
       <div className={styles.body}>
         <div className={styles.scoreCards}>
           <div className={styles.scoreCards__item}>
-            <span>Общий балл</span>
+            <span>Общие количество вопросов</span>
             <span>0</span>
           </div>
           <div className={styles.scoreCards__item}>

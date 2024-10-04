@@ -45,14 +45,14 @@ export const ModalFinishTest = ({
     >
       {unansweredQuestions.length > 0 && (
         <div className={styles.unansweredQuestions}>
-          <h3>У вас неотвеченных ({unansweredQuestions.length}) вопросов</h3>
-          {/* <ul>
+          <h3>У вас неотвеченных ({unansweredQuestions.length}) вопросов:</h3>
+          <ul>
             {unansweredQuestions.map((item, index) => (
               <li key={index}>
                 {item.testTitle}: Вопрос {item.questionNumber}
               </li>
             ))}
-          </ul> */}
+          </ul>
         </div>
       )}
     </Modal>

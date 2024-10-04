@@ -7,6 +7,7 @@ import { ReactComponent as IconArrow } from 'assets/icons/arrow-left.svg';
 import { ModalFinishTest } from '../ModalFinishTest/ModalFinishTest';
 
 type TProps = {
+  productTitle: string | undefined
   handleOpenFinistTestModal: () => void
   unansweredQuestions: {
     testTitle: string;
@@ -23,6 +24,7 @@ type TProps = {
 }
 
 const StartedTestForm = ({
+  productTitle,
   handleOpenFinistTestModal,
   unansweredQuestions,
   setUnansweredQuestions,
@@ -185,11 +187,20 @@ const StartedTestForm = ({
 
   return (
     <>
+      {/* <h2 className={styles.title}>{title}</h2> */}
+
       <div className={styles.testForm}>
         {timerInitialized && testIsStarted && timeLeft > 0 && (
-          <div className={styles.timer}>
+          <div
+            className={cn(styles.timer)}
+          >
             Осталось: {formatTime(timeLeft)}
           </div>
+        )}
+        {timerInitialized && testIsStarted && timeLeft > 0 && (
+          <h2 className={styles.title}>
+            {productTitle}
+          </h2>
         )}
 
         <Button

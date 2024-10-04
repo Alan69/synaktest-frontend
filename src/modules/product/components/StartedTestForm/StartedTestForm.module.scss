@@ -53,14 +53,31 @@
     }
 }
 
-.timer {
+.title {
     margin-bottom: 24px;
     color: var(--White, #FFF);
     text-align: center;
     font-family: Gilroy;
-    font-size: 32px;
+    font-size: 36px;
     font-style: normal;
     font-weight: 700;
+}
+
+.timer {
+    height: 34px;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 6px 18px;
+    border-radius: 6px;
+    border: 1px solid #FFF !important;
+    color: #fff !important;
+    text-align: center;
+    font-family: Gilroy;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 140%;
+    transition: 0.3s all;
 }
 
 .tabs {
@@ -144,9 +161,11 @@
     font-size: 20px;
     font-style: normal;
     font-weight: 500;
+    line-height: normal;
 }
 
 .options {
+    padding-bottom: 60px;
     display: flex;
     flex-direction: column;
     text-align: left;

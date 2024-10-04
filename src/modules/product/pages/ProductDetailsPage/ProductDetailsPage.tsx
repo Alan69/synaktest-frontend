@@ -9,7 +9,7 @@ import styles from './ProductDetailsPage.module.scss';
 import StartedTestForm from 'modules/product/components/StartedTestForm/StartedTestForm';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 
-const MAX_SELECTION = 1;
+const MAX_SELECTION = 2;
 
 const ProductDetailsPage = () => {
   const navigate = useNavigate();
@@ -154,6 +154,7 @@ const ProductDetailsPage = () => {
           )}
           {testIsStarted ?
             <StartedTestForm
+              productTitle={product?.title}
               handleOpenFinistTestModal={handleOpenFinistTestModal}
               unansweredQuestions={unansweredQuestions}
               setUnansweredQuestions={setUnansweredQuestions}
