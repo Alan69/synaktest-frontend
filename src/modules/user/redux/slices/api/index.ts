@@ -50,7 +50,7 @@ export const userApi = baseApi.injectEndpoints({
     }),
     updateUserProfile: build.mutation({
       query: (updatedData) => ({
-        url: '/user/',
+        url: '/user/update/',
         method: 'PUT',
         body: updatedData,
       }),
