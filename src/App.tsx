@@ -8,13 +8,13 @@ import ResetPassword from 'pages/common/ResetPassword';
 import ProductDetailsPage from 'modules/product/pages/ProductDetailsPage/ProductDetailsPage';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 import { useTypedSelector } from 'hooks/useTypedSelector';
-import MainLayout from 'components/layouts/MainLayout/MainLayout';
-import { UnauthorisedLayout } from 'components/layouts/UnauthorisedLayout/UnauthorisedLayout';
 import { message } from 'antd';
 import { CompletedTestDetailsPage } from 'modules/competed-test/pages/CompletedTestDetailsPage/CompletedTestDetailsPage';
 import { TQuestion, TTest, useCompleteTestMutation } from 'modules/product/redux/api';
 import { CompletedTestListPage } from './modules/competed-test/pages/CompletedTestListPage/CompletedTestListPage';
 import ProfilePage from 'modules/user/pages/ProfilePage';
+import { UnauthorisedLayout } from 'layouts/UnauthorisedLayout/UnauthorisedLayout';
+import MainLayout from 'layouts/MainLayout/MainLayout';
 
 export const TimerContext = createContext<{
   timeLeft: number;

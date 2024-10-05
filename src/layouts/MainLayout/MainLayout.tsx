@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import Footer from 'components/footer/Footer';
 import styles from './MainLayout.module.scss'
-import Header from 'components/Header/Header';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/footer/Footer';
 
 const MainLayout = () => {
   const location = useLocation();
