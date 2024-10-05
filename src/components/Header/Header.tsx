@@ -3,11 +3,11 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { Layout, message } from 'antd';
 import Logo from '../logo/Logo';
-import Navbar from '../Navbar/Navbar';
 import { useTypedSelector } from 'hooks/useTypedSelector';
 import { authActions } from 'modules/auth/redux/slices/authSlice';
 
 import styles from './Header.module.scss'
+import Navbar from 'components/Navbar/Navbar';
 
 const { Header: AntHeader } = Layout;
 
