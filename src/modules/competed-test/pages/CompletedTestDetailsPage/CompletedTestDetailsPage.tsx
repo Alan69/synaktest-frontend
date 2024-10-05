@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Title from 'antd/es/typography/Title';
 import { differenceInMilliseconds } from 'date-fns';
-import cn from 'classnames'
+import cn from 'classnames';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 import { useGetCompletedTestByIdQuery } from 'modules/competed-test/redux/api';
-
-import styles from './CompletedTestDetailsPage.module.scss'
+import styles from './CompletedTestDetailsPage.module.scss';
 import { Progress } from 'antd';
 
 export const CompletedTestDetailsPage = () => {
@@ -14,8 +13,7 @@ export const CompletedTestDetailsPage = () => {
   const [getAuthUser] = useLazyGetAuthUserQuery();
   const { data } = useGetCompletedTestByIdQuery(id);
 
-  // @ts-ignore
-  const formatTimeDifference = (startTime, endTime) => {
+  const formatTimeDifference = (startTime: string, endTime: string) => {
     const startDate = new Date(startTime);
     const endDate = new Date(endTime);
 
@@ -46,12 +44,14 @@ export const CompletedTestDetailsPage = () => {
     }
   };
 
-  const percentage = (25 / 13) * 100;
+  const totalQuestions = data?.completed_questions.length || 0;
+  const correctAnswers = data?.correct_answers_count || 0;
+  const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
   const grade = getGrade(percentage);
 
   useEffect(() => {
-    getAuthUser()
-  }, [])
+    getAuthUser();
+  }, [getAuthUser]);
 
   return (
     <div className={styles.page}>
@@ -61,19 +61,19 @@ export const CompletedTestDetailsPage = () => {
         <div className={styles.scoreCards}>
           <div className={styles.scoreCards__item}>
             <span>Общие количество вопросов</span>
-            <span>0</span>
+            <span>{totalQuestions}</span>
           </div>
           <div className={styles.scoreCards__item}>
-            <span>Достижение (%)</span>
-            <span>0</span>
+            <span>Процент прохождения</span>
+            <span>{percentage.toFixed(2)}%</span>
           </div>
           <div className={styles.scoreCards__item}>
             <span>Правильных</span>
-            <span>0</span>
+            <span>{correctAnswers}</span>
           </div>
           <div className={styles.scoreCards__item}>
             <span>Неправильных</span>
-            <span>0</span>
+            <span>{data?.incorrect_answers_count}</span>
           </div>
         </div>
 
@@ -120,7 +120,7 @@ export const CompletedTestDetailsPage = () => {
               <div className={cn(styles.mainInfoCards__item__label, styles.mainInfoCards__item__label__wFixed)}>
                 Казахский язык
               </div>
-              <Progress percent={30} />
+              <Progress percent={percentage} />
               <div className={cn(styles.mainInfoCards__item__value, styles.mainInfoCards__item__value__wFixed)}>
                 {data?.user.username}
               </div>
@@ -170,5 +170,5 @@ export const CompletedTestDetailsPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

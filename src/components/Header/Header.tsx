@@ -31,15 +31,15 @@ const Header = () => {
       <div className='flex items-center gap-6'>
         {!token ? (
           <>
-            <Link to='/login' className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>Войти</Link>
-            <Link to='/signup' className='button hidden rounded-[50px] border-black bg-black text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>Регистрация</Link>
+            <Link to='/login' className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorMainPurple hover:border-colorMainPurple hover:text-white lg:inline-block'>Войти</Link>
+            <Link to='/signup' className='button hidden rounded-[50px] border-black bg-black text-white after:bg-colorMainPurple hover:border-colorMainPurple hover:text-white lg:inline-block'>Регистрация</Link>
           </>
         ) : (
           <>
             {!user?.test_is_started ?
               <button
                 onClick={handleLogout}
-                className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white lg:inline-block'>
+                className='button hidden rounded-[50px] border-[#7F8995] bg-transparent text-black after:bg-colorMainPurple hover:border-colorMainPurple hover:text-white lg:inline-block'>
                 Выйти
               </button> : ''
             }

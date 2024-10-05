@@ -6,6 +6,10 @@ export interface TTestResponse {
   product: Troduct
   completed_date: string
   completed_questions: TCompletedQuestion[]
+  correct_answers_count: number
+  incorrect_answers_count: number
+  start_test_time: string | null
+  finish_test_time: string | null
 }
 
 export interface TUser {

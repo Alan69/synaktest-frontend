@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom';
 import { useGetProductListQuery } from 'modules/product/redux/api';
 import styles from './ProductList.module.scss';
 import { ReactComponent as IconTest } from '../../../../assets/img/icon-test.svg';
+import { Spin } from 'antd';
 
 const ProductList = () => {
   const { data: products, isLoading } = useGetProductListQuery();
 
   if (isLoading) {
-    return <div>Загрузка...</div>;
+    return (
+      <div className={styles.loadingContainer}>
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (

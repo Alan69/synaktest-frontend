@@ -12,7 +12,8 @@ const MainLayout = () => {
       <main className={styles.mainLayout}>
         <Outlet />
       </main>
-      {location.pathname.includes('product') ? '' : <Footer />}
+      {/* {location.pathname.includes('product') ? '' : <Footer />} */}
+      <Footer />
     </div>
   );
 };

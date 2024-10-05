@@ -4,8 +4,9 @@ import { useSignUpMutation } from 'modules/auth/redux/api';
 import { Form, Input, Checkbox, Button, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { authActions } from 'modules/auth/redux/slices/authSlice';
+import Title from 'antd/es/typography/Title';
 
-const Signup = () => {
+const SignUpPage = () => {
   const dispatch = useDispatch();
   const [signUp, { isLoading }] = useSignUpMutation();
 
@@ -30,10 +31,10 @@ const Signup = () => {
   return (
     <main className='main-wrapper relative overflow-hidden'>
       <section id='signup-section'>
-        <div className='py-40 pt-36 xl:pb-[200px] xl:pt-[180px]'>
+        <div className='py-40 pt-36 xl:pb-[80px] xl:pt-[60px]'>
           <div className='global-container'>
             <div className='mx-auto max-w-[910px] text-center'>
-              <h1 className='mb-[50px]'>Создать аккаунт</h1>
+              <Title level={1} className='mb-[60px]'>Создать аккаунт</Title>
               <div className='block rounded-lg bg-white px-[30px] py-[50px] text-left shadow-[0_4px_60px_0_rgba(0,0,0,0.1)] sm:px-10'>
                 <Form
                   onFinish={onFinish}
@@ -129,7 +130,7 @@ const Signup = () => {
                   >
                     <Checkbox>
                       Я прочитал и ознакомился с{' '}
-                      <Link to="#" className="font-bold hover:text-colorOrangyRed">
+                      <Link to="#" className="font-bold hover:text-colorMainPurple">
                         Правилами
                       </Link>
                     </Checkbox>
@@ -139,7 +140,7 @@ const Signup = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ height: 'auto' }}
-                    className='button mt-7 block rounded-[50px] border-2 border-black bg-black py-4 text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white'
+                    className='button mt-7 block rounded-[50px] border-2 bg-black py-4 text-white after:bg-colorMainPurple hover:border-colorMainPurple hover:text-white'
                     loading={isLoading}
                   >
                     {isLoading ? 'Регистрация...' : 'Создать аккаунт'}
@@ -147,7 +148,7 @@ const Signup = () => {
                 </Form>
                 <div className='mt-10 text-center'>
                   Уже есть аккаунт? &nbsp;
-                  <Link to='/login' className='text-base font-semibold hover:text-colorOrangyRed'>
+                  <Link to='/login' className='text-base font-semibold hover:text-colorMainPurple'>
                     Войти
                   </Link>
                 </div>
@@ -160,4 +161,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUpPage;

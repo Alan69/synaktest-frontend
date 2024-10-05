@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined, DollarOutlined } from '@ant-design/icons';
 import { TUser, useChangePasswordMutation, useGetAuthUserQuery, useUpdateUserProfileMutation } from 'modules/user/redux/slices/api';
 import { ModalAddBalance } from '../components/ModalAddBalance/ModalAddBalance';
 import Title from 'antd/es/typography/Title';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [selectedMenu, setSelectedMenu] = useState('personal-info');
 
-  const { data: user, isLoading: isUserLoading } = useGetAuthUserQuery()
+  const { data: user, isLoading: isUserLoading } = useGetAuthUserQuery();
   const [updateUserProfile, { isLoading: isUpdating }] = useUpdateUserProfileMutation();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
   const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Определяем активный таб на основе текущего URL
+    if (location.pathname === '/profile' || location.pathname === '/profile/personal-info') {
+      setSelectedMenu('personal-info');
+    } else if (location.pathname === '/profile/update-password') {
+      setSelectedMenu('update-password');
+    } else if (location.pathname === '/profile/balance') {
+      setSelectedMenu('balance');
+    }
+  }, [location.pathname]);
 
   const handleProfileUpdate = async (values: TUser) => {
     try {
@@ -128,6 +143,23 @@ const ProfilePage = () => {
     }
   };
 
+  const handleMenuClick = (key: string) => {
+    switch (key) {
+      case 'personal-info':
+        navigate('/profile/personal-info');
+        break;
+      case 'update-password':
+        navigate('/profile/update-password');
+        break;
+      case 'balance':
+        navigate('/profile/balance');
+        break;
+      default:
+        navigate('/profile');
+        break;
+    }
+  };
+
   return (
     <>
       <div style={{ display: 'flex', padding: '20px', minHeight: '750px' }}>
@@ -135,7 +167,7 @@ const ProfilePage = () => {
           mode="inline"
           style={{ width: 256 }}
           selectedKeys={[selectedMenu]}
-          onClick={(e) => setSelectedMenu(e.key)}
+          onClick={(e) => handleMenuClick(e.key)}
         >
           <Menu.Item key="personal-info" icon={<UserOutlined />}>
             Персональная информация

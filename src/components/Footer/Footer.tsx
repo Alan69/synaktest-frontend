@@ -78,7 +78,7 @@ const Footer = () => {
               <li>
                 <Link
                   to='/'
-                  className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
+                  className='transition-all duration-300 ease-linear hover:text-colorMainPurple'
                 >
                   Главная
                 </Link>
@@ -86,7 +86,7 @@ const Footer = () => {
               <li>
                 <Link
                   to='/contact'
-                  className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
+                  className='transition-all duration-300 ease-linear hover:text-colorMainPurple'
                 >
                   Контакты
                 </Link>
@@ -101,7 +101,7 @@ const Footer = () => {
               <li>
                 <Link
                   to='/signup'
-                  className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
+                  className='transition-all duration-300 ease-linear hover:text-colorMainPurple'
                 >
                   Регистрация
                 </Link>
@@ -109,7 +109,7 @@ const Footer = () => {
               <li>
                 <Link
                   to='/login'
-                  className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
+                  className='transition-all duration-300 ease-linear hover:text-colorMainPurple'
                 >
                   Вход
                 </Link>
@@ -117,7 +117,7 @@ const Footer = () => {
               <li>
                 <Link
                   to='/reset-password'
-                  className='transition-all duration-300 ease-linear hover:text-colorOrangyRed'
+                  className='transition-all duration-300 ease-linear hover:text-colorMainPurple'
                 >
                   Восстановление пароля
                 </Link>

@@ -65,13 +65,13 @@ export const CompletedTestListPage = () => {
                 </div>
                 <div className={styles.list__item__additional}>
                   <div className={styles.list__item__additional__cell}>
-                    {el.user.username}
+                    {el.correct_answers_count}
                   </div>
                   <div className={styles.list__item__additional__cell}>
                     {el.completed_date}
                   </div>
                   <div className={styles.list__item__additional__cell}>
-                    {el.completed_date}
+                    {el.finish_test_time}
                   </div>
                   <Link
                     to={`/completed-test/${el.id}`}

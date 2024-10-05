@@ -34,7 +34,7 @@ export default {
 
             colors: {
                 colorCodGray: "#191919",
-                colorOrangyRed: "#FE330A",
+                colorMainPurple: "#8D9CFC",
                 colorLinenRuffle: "#EFEAE3",
                 colorViolet: "#321CA4",
                 colorGreen: "#39FF14",

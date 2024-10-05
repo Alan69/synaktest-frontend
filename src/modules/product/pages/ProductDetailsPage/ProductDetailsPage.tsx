@@ -1,19 +1,23 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import cn from 'classnames';
-import { message } from 'antd';
+import { message, Spin } from 'antd';
 import { useGetProductByIdQuery, useGetSubjectListByProductIdQuery, useStartTestMutation } from 'modules/product/redux/api';
 import { CustomCheckbox } from '../../../../components/CustomCheckbox/CustomCheckbox';
 import { ReactComponent as IconArrow } from 'assets/icons/arrow-left.svg';
 import styles from './ProductDetailsPage.module.scss';
 import StartedTestForm from 'modules/product/components/StartedTestForm/StartedTestForm';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
+import { useTypedSelector } from 'hooks/useTypedSelector';
+import { ModalNotEnoughBalance } from 'modules/product/components/ModalNotEnoughBalance/ModalNotEnoughBalance';
 
 const MAX_SELECTION = 2;
 
 const ProductDetailsPage = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  const { user } = useTypedSelector((state) => state.auth);
 
   const { data: product, isLoading: isProductLoading } = useGetProductByIdQuery(id);
   const { data: subjectList, isLoading: isSubjectListLoading } = useGetSubjectListByProductIdQuery(product?.id);
@@ -26,10 +30,22 @@ const ProductDetailsPage = () => {
   const [testIsStarted, setTestIsStarted] = useState<boolean>(false);
   const [unansweredQuestions, setUnansweredQuestions] = useState<{ testTitle: string; questionNumber: number; questionId: string }[]>([]);
   const [isFinishTestModalOpen, setIsFinishTestModalOpen] = useState(false);
+  const [isNotEnoughBalanceModalOpen, setIsNotEnoughBalanceModalOpen] = useState(false);
 
   const selectedCount = Object.values(selectedSubjects).filter(Boolean).length;
 
+
   const handleStart = async () => {
+    if (!product || !user) {
+      message.error('Продукт или данные пользователя не загружены');
+      return;
+    }
+
+    if (parseFloat(user.balance) < product.sum) {
+      setIsNotEnoughBalanceModalOpen(true);
+      return;
+    }
+
     const requiredTestIds = Object.keys(selectedRequiredSubjects).filter((key) => selectedRequiredSubjects[key]);
     const selectedTestIds = Object.keys(selectedSubjects).filter((key) => selectedSubjects[key]);
 
@@ -56,7 +72,6 @@ const ProductDetailsPage = () => {
           const serializedTests = JSON.stringify(response.tests);
           localStorage.setItem('test', serializedTests);
           localStorage.setItem('product_id', id || '');
-          // @ts-ignore
           localStorage.setItem('testIsStarted', JSON.stringify(authResponse.test_is_started));
 
           if (response.time) {
@@ -64,7 +79,6 @@ const ProductDetailsPage = () => {
             message.success('Время теста успешно сохранено в localStorage.');
           }
 
-          // @ts-ignore
           setTestIsStarted(authResponse.test_is_started);
 
           window.location.reload();
@@ -128,9 +142,10 @@ const ProductDetailsPage = () => {
     }
   }, []);
 
-
   if (isProductLoading) {
-    return <div>Loading...</div>;
+    return <div className={styles.loadingContainer}>
+      <Spin size="large" />
+    </div>;
   }
 
   return (
@@ -217,6 +232,11 @@ const ProductDetailsPage = () => {
             )}
         </div>
       </div>
+      <ModalNotEnoughBalance
+        isOpen={isNotEnoughBalanceModalOpen}
+        setOpen={setIsNotEnoughBalanceModalOpen}
+        balance={user?.balance || 0}
+      />
     </>
   );
 };

@@ -69,7 +69,12 @@ const Navbar = ({ mobileMenu, setMobileMenu }: TProps) => {
             </Link>
           </li>
           <li className='nav-item'>
-            <Link to='/completed-test/list' className='nav-link-item'>
+            <Link to={token ? '/product/list' : '/login'} className='nav-link-item'>
+              Продукты
+            </Link>
+          </li>
+          <li className='nav-item'>
+            <Link to={token ? '/completed-test/list' : '/login'} className='nav-link-item'>
               Результаты
             </Link>
           </li>

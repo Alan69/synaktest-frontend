@@ -17,7 +17,7 @@ export const ModalAddBalance: React.FC<ModalAddBalanceProps> = ({ isOpen, setIsO
   return (
     <Modal
       title="Пополнение баланса"
-      visible={isOpen}
+      open={isOpen}
       footer={null}
       onCancel={handleCancel}
     >

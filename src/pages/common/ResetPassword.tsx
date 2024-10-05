@@ -1,3 +1,5 @@
+import Title from "antd/es/typography/Title";
+
 const ResetPassword = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -5,10 +7,10 @@ const ResetPassword = () => {
   return (
     <main className='main-wrapper relative overflow-hidden'>
       <section id='password-reset-section'>
-        <div className='py-40 pt-36 xl:pb-[200px] xl:pt-[180px]'>
+        <div className='py-40 pt-36 xl:pb-[80px] xl:pt-[60px]'>
           <div className='global-container'>
             <div className='mx-auto max-w-[910px] text-center'>
-              <h1 className='mb-[50px]'>Reset Password</h1>
+              <Title level={1} className='mb-[60px]'>Reset Password</Title>
               <div className='block rounded-lg bg-white px-[30px] py-[50px] text-left shadow-[0_4px_60px_0_rgba(0,0,0,0.1)] sm:px-10'>
                 <form
                   onSubmit={handleSubmit}
@@ -27,7 +29,7 @@ const ResetPassword = () => {
                         name='password-reset-email'
                         id='password-reset-email'
                         placeholder='example@gmail.com'
-                        className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorOrangyRed'
+                        className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorMainPurple'
                       />
                     </div>
                     <div className='flex flex-col gap-y-[10px]'>
@@ -42,13 +44,13 @@ const ResetPassword = () => {
                         name='password-reset-password'
                         id='password-reset-password'
                         placeholder='............'
-                        className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorOrangyRed'
+                        className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorMainPurple'
                       />
                     </div>
                   </div>
                   <button
                     type='submit'
-                    className='button mt-7 block rounded-[50px] border-2 border-black bg-black py-4 text-white after:bg-colorOrangyRed hover:border-colorOrangyRed hover:text-white'
+                    className='button mt-7 block rounded-[50px] border-2 border-black bg-black py-4 text-white after:bg-colorMainPurple hover:border-colorMainPurple hover:text-white'
                   >
                     Change password
                   </button>

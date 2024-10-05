@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, createContext, useCallback } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './modules/auth/pages/LoginPage';
-import Signup from './pages/common/Signup';
 import useJOSAnimation from './hooks/useJOSAnimation';
 import Home from 'pages/home/Home';
 import ResetPassword from 'pages/common/ResetPassword';
@@ -15,6 +14,8 @@ import { CompletedTestListPage } from './modules/competed-test/pages/CompletedTe
 import ProfilePage from 'modules/user/pages/ProfilePage';
 import { UnauthorisedLayout } from 'layouts/UnauthorisedLayout/UnauthorisedLayout';
 import MainLayout from 'layouts/MainLayout/MainLayout';
+import SignUpPage from 'modules/auth/pages/SignUpPage';
+import { ProductListPage } from 'modules/product/pages/ProductListPage/ProductListPage';
 
 export const TimerContext = createContext<{
   timeLeft: number;
@@ -161,7 +162,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/home' element={<Home />} />
           <Route path='/login' element={<LoginPage />} />
-          <Route path='/signup' element={<Signup />} />
+          <Route path='/signup' element={<SignUpPage />} />
           <Route path='/reset-password' element={<ResetPassword />} />
           <Route path='*' element={<Home />} />
         </Route>
@@ -181,6 +182,10 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/home' element={<Home />} />
           <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/profile/personal-info' element={<ProfilePage />} />
+          <Route path='/profile/update-password' element={<ProfilePage />} />
+          <Route path='/profile/balance' element={<ProfilePage />} />
+          <Route path="/product/list" element={<ProductListPage />} />
           <Route path="/product/:id" element={<ProductDetailsPage />} />
           <Route path="/completed-test/list" element={<CompletedTestListPage />} />
           <Route path="/completed-test/:id" element={<CompletedTestDetailsPage />} />
