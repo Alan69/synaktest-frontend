@@ -149,31 +149,24 @@ export const CompletedTestDetailsPage = () => {
         </div>
 
         <div className={styles.errorWorkCard}>
-          <Title level={4}>Общая информация</Title>
+          <Title level={4}>Работа над ошибками</Title>
           <div className={styles.errorWorkCard__row}>
-            <div className={styles.errorWorkCard__label}>
-              Казахский язык
-            </div>
-            <div className={styles.errorWorkCard__question}>
-              <div className={styles.errorWorkCard__question__item}>
-                1
-              </div>
-              <div className={styles.errorWorkCard__question__item}>
-                1
-              </div>
-              <div className={styles.errorWorkCard__question__item}>
-                1
-              </div>
-              <div className={styles.errorWorkCard__question__item}>
-                1
-              </div>
-              <div className={styles.errorWorkCard__question__item}>
-                1
-              </div>
-              <div className={styles.errorWorkCard__question__item}>
-                1
-              </div>
-            </div>
+            {
+              data?.product.tests.map((el) => (
+                <div className={styles.errorWorkCard__column}>
+                  <div className={styles.errorWorkCard__label}>
+                    {el.title}
+                  </div>
+                  <div className={styles.errorWorkCard__question}>
+                    {el.questions.map((el) => (
+                      <div className={styles.errorWorkCard__question__item}>
+                        1
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>

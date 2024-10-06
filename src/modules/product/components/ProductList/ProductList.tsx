@@ -1,11 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useGetProductListQuery } from 'modules/product/redux/api';
 import styles from './ProductList.module.scss';
 import { ReactComponent as IconTest } from '../../../../assets/img/icon-test.svg';
 import { Spin } from 'antd';
 
 const ProductList = () => {
+  const location = useLocation();
+
   const { data: products, isLoading } = useGetProductListQuery();
 
   if (isLoading) {
@@ -44,7 +46,7 @@ const ProductList = () => {
                   <IconTest />
                 </div>
                 <Link
-                  to={`/product/list`}
+                  to={location.pathname.includes('home') ? '/product/list' : `/product/${product.id}`}
                   className={styles.product__item__button}
                 >
                   Оплатить
