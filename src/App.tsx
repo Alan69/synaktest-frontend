@@ -31,7 +31,7 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [getAuthUser] = useLazyGetAuthUserQuery();
-  const { token } = useTypedSelector((state) => state.auth);
+  const { token, user } = useTypedSelector((state) => state.auth);
   const [completeTest, { isLoading: isCompleting }] = useCompleteTestMutation();
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -174,6 +174,16 @@ function App() {
   if (location.pathname === '/') {
     navigate('/home');
   }
+
+  // if (user?.test_is_started) {
+  //   const productId = localStorage.getItem('product_id');
+
+  //   if (productId) {
+  //     navigate(`/product/${productId}`);
+  //   } else {
+  //     message.error('Ошибка: идентификатор продукта не найден.');
+  //   }
+  // }
 
   return (
     <TimerContext.Provider value={{ timeLeft, formatTime, testIsStarted, timerInitialized, handleCompleteTest, isCompleting }}>

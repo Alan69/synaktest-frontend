@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { message, Spin } from 'antd';
 import { useGetProductListQuery } from 'modules/product/redux/api';
 import { ReactComponent as IconTest } from '../../../../assets/img/icon-test.svg';
@@ -10,6 +10,8 @@ import styles from './ProductList.module.scss';
 const ProductList = () => {
   const { data: products, isLoading } = useGetProductListQuery();
   const { user } = useTypedSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const productId = localStorage.getItem('product_id');
 
   if (isLoading) {
     return (
@@ -47,11 +49,13 @@ const ProductList = () => {
                   <IconTest />
                 </div>
                 <Link
-                  to={!user?.test_is_started ? `/product/${product.id}` : '/product/list'}
-                  className={cn(styles.product__item__button, user?.test_is_started ? styles.product__item__button__disabled : '')}
+                  to={!user?.test_is_started ? `/product/${product.id}` : `/product/${productId}`}
+                  // className={cn(styles.product__item__button, user?.test_is_started ? styles.product__item__button__disabled : '')}
+                  className={styles.product__item__button}
                   onClick={() => {
                     if (user?.test_is_started) {
                       message.warning('Вы уже начали тест! Завершите его, чтобы начать другой!')
+                      // navigate(`/product/${product.id}`)
                     }
                   }}
                 >
