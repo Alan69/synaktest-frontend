@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Form, Input, Button, message } from 'antd';
-import { UserOutlined, LockOutlined, DollarOutlined } from '@ant-design/icons';
-import { TUser, useChangePasswordMutation, useGetAuthUserQuery, useUpdateUserProfileMutation } from 'modules/user/redux/slices/api';
+import { UserOutlined, LockOutlined, DollarOutlined, ReloadOutlined } from '@ant-design/icons';
+import { TUser, useChangePasswordMutation, useGetAuthUserQuery, useUpdateBalanceMutation, useUpdateUserProfileMutation } from 'modules/user/redux/slices/api';
 import { ModalAddBalance } from '../components/ModalAddBalance/ModalAddBalance';
 import Title from 'antd/es/typography/Title';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -12,9 +12,10 @@ const ProfilePage = () => {
 
   const [selectedMenu, setSelectedMenu] = useState('personal-info');
 
-  const { data: user, isLoading: isUserLoading } = useGetAuthUserQuery();
+  const { data: user, isLoading: isUserLoading, refetch: refetchUser } = useGetAuthUserQuery();
   const [updateUserProfile, { isLoading: isUpdating }] = useUpdateUserProfileMutation();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const [updateBalance] = useUpdateBalanceMutation();
   const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
 
   useEffect(() => {
@@ -52,6 +53,12 @@ const ProfilePage = () => {
       message.error(error.data.detail);
     }
   };
+
+  const handleUpdateBalance = () => {
+    updateBalance().unwrap().then(() => {
+      refetchUser()
+    })
+  }
 
   const renderContent = () => {
     if (!user) {
@@ -133,9 +140,14 @@ const ProfilePage = () => {
         return (
           <div>
             <Title level={4}>Текущий баланс: {user.balance} KZT</Title>
-            <Button type="primary" onClick={() => setIsBalanceModalOpen(true)}>
-              Пополнить баланс
-            </Button>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <Button type="primary" onClick={() => setIsBalanceModalOpen(true)}>
+                Пополнить баланс
+              </Button>
+              {/* <Button type="primary" onClick={handleUpdateBalance} icon={<ReloadOutlined />}>
+                Обновить баланс
+              </Button> */}
+            </div>
           </div>
         );
       default:

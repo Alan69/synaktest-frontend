@@ -31,6 +31,10 @@ export type TChangePasswordResponse = {
   access: string
 }
 
+export type TUpdateBalanceResponse = {
+  success: string
+}
+
 export const userApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getAuthUser: build.query<TUser, void>({
@@ -68,6 +72,14 @@ export const userApi = baseApi.injectEndpoints({
       transformResponse: (response: TChangePasswordResponse) => response,
       extraOptions: { showErrors: false },
     }),
+    updateBalance: build.mutation<TUpdateBalanceResponse, void>({
+      query: () => ({
+        url: '/update/balance/',
+        method: 'POST'
+      }),
+      transformResponse: (response: TUpdateBalanceResponse) => response,
+      extraOptions: { showErrors: false },
+    }),
   }),
   overrideExisting: false,
 });
@@ -76,5 +88,6 @@ export const {
   useLazyGetAuthUserQuery,
   useGetAuthUserQuery,
   useUpdateUserProfileMutation,
-  useChangePasswordMutation
+  useChangePasswordMutation,
+  useUpdateBalanceMutation
 } = userApi;
