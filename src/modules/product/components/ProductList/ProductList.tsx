@@ -44,7 +44,7 @@ const ProductList = () => {
                   <IconTest />
                 </div>
                 <Link
-                  to={`/product/${product.id}`}
+                  to={`/product/list`}
                   className={styles.product__item__button}
                 >
                   Оплатить

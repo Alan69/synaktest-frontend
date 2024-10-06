@@ -1,67 +1,56 @@
 import baseApi from '../../../../redux/api/index';
 
-export interface TTestResponse {
-  id: string
-  user: TUser
-  product: Troduct
-  completed_date: string
-  completed_questions: TCompletedQuestion[]
-  correct_answers_count: number
-  incorrect_answers_count: number
-  start_test_time: string | null
-  finish_test_time: string | null
+export type TAllOptions = {
+  id: string;
+  text: string;
 }
 
-export interface TUser {
-  id: number
-  username: string
+export type TQuestions = {
+  id: string;
+  question_text: string;
+  selected_option: string | null;
+  all_options: TAllOptions
 }
 
-export interface Troduct {
-  id: string
-  title: string
+export type TTest = {
+  id: string;
+  title: string;
+  total_correct_by_test: number;
+  total_incorrect_by_test: number;  
+  questions: TQuestions[];
 }
 
-export interface TCompletedQuestion {
-  id: string
-  question: TQuestion
-  selected_option: TSelectedOption
+export interface TProduct {
+  id: string;
+  title: string;
+  total_correct_by_all_tests: number;
+  total_incorrect_by_all_tests: number;
+  tests: TTest[];
 }
 
-export interface TQuestion {
-  id: string
-  text: string
-  options: TOption[]
+export interface TCompletedTestResponse {
+  id: string;
+  finish_test_time: string | null;
+  start_test_time: string | null;
+  user: string;
+  product: TProduct;
 }
-
-export interface TOption {
-  id: string
-  text: string
-  is_correct: string
-}
-
-export interface TSelectedOption {
-  id: string
-  text: string
-  is_correct: string
-}
-
 
 export const completedTestApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getCompletedTestList: build.query<TTestResponse[], void>({
+    getCompletedTestList: build.query<TCompletedTestResponse[], void>({
 			query: () => ({
 				url: '/completed-tests/',
 				method: 'GET'
 			}),
-			transformResponse: (response: TTestResponse[]) => response,
+			transformResponse: (response: TCompletedTestResponse[]) => response,
     }),
-    getCompletedTestById: build.query<TTestResponse, string | undefined>({
+    getCompletedTestById: build.query<TCompletedTestResponse, string | undefined>({
 			query: (id) => ({
 				url: `/completed-tests/${id}/`,
 				method: 'GET'
 			}),
-			transformResponse: (response: TTestResponse) => response,
+			transformResponse: (response: TCompletedTestResponse) => response,
     }),
   }),
 	overrideExisting: false,

@@ -44,10 +44,10 @@ export const CompletedTestDetailsPage = () => {
     }
   };
 
-  const totalQuestions = data?.completed_questions.length || 0;
-  const correctAnswers = data?.correct_answers_count || 0;
+  const correctAnswers = data?.product?.total_correct_by_all_tests || 0;
+  const inCorrectAnswers = data?.product?.total_incorrect_by_all_tests || 0;
+  const totalQuestions = ((data?.product?.total_correct_by_all_tests || 0) + (data?.product?.total_incorrect_by_all_tests || 0)) || 0;
   const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
-  const grade = getGrade(percentage);
 
   useEffect(() => {
     getAuthUser();
@@ -73,7 +73,7 @@ export const CompletedTestDetailsPage = () => {
           </div>
           <div className={styles.scoreCards__item}>
             <span>Неправильных</span>
-            <span>{data?.incorrect_answers_count}</span>
+            <span>{inCorrectAnswers}</span>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export const CompletedTestDetailsPage = () => {
                 Имя-фамилия
               </div>
               <div className={styles.mainInfoCards__item__value}>
-                {data?.user.username}
+                {data?.user}
               </div>
             </div>
             <div className={styles.mainInfoCards__item__row}>
@@ -116,27 +116,35 @@ export const CompletedTestDetailsPage = () => {
 
           <div className={styles.mainInfoCards__item}>
             <Title level={4}>Показатели успеха по предметам</Title>
-            <div className={styles.mainInfoCards__item__row}>
-              <div className={cn(styles.mainInfoCards__item__label, styles.mainInfoCards__item__label__wFixed)}>
-                Казахский язык
-              </div>
-              <Progress percent={percentage} />
-              <div className={cn(styles.mainInfoCards__item__value, styles.mainInfoCards__item__value__wFixed)}>
-                {data?.user.username}
-              </div>
-            </div>
+            {
+              data?.product.tests.map((el) => (
+                <div className={styles.mainInfoCards__item__row}>
+                  <div className={cn(styles.mainInfoCards__item__label, styles.mainInfoCards__item__label__wFixed)}>
+                    {el.title}
+                  </div>
+                  <Progress percent={Number(((el.total_correct_by_test / el.questions.length) * 100).toFixed(2))} />
+                  <div className={cn(styles.mainInfoCards__item__value, styles.mainInfoCards__item__value__wFixed)}>
+                    {`${el.total_correct_by_test} из ${el.questions.length}`}
+                  </div>
+                </div>
+              ))
+            }
           </div>
 
           <div className={styles.mainInfoCards__item}>
             <Title level={4}>Оценка по предметам</Title>
-            <div className={styles.mainInfoCards__item__row}>
-              <div className={styles.mainInfoCards__item__label}>
-                Казахский язык
-              </div>
-              <div className={styles.mainInfoCards__item__value}>
-                {grade}
-              </div>
-            </div>
+            {
+              data?.product.tests.map((el) => (
+                <div className={styles.mainInfoCards__item__row}>
+                  <div className={styles.mainInfoCards__item__label}>
+                    {el.title}
+                  </div>
+                  <div className={styles.mainInfoCards__item__value}>
+                    {getGrade(((el.total_correct_by_test / el.questions.length) * 100))}
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
 

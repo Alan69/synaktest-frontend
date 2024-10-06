@@ -21,7 +21,7 @@ const Header = () => {
   const handleLogout = async () => {
     dispatch(authActions.logOut());
     navigate('/home');
-    message.success('Logout successful!');
+    message.success('Вы успешно вышли!');
   };
 
   return (
