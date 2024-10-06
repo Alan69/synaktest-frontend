@@ -88,6 +88,14 @@
                 background: transparent;
                 color: #fff !important;
             }
+            &__disabled {
+                cursor: not-allowed;
+                background: var(--Line, rgba(0, 0, 0, 0.10)) !important;
+                color: var(--White, #FFF);
+                &:hover {
+                    border: 1px solid var(--Line, rgba(0, 0, 0, 0.10));
+                }
+            }
         }
     }
 }

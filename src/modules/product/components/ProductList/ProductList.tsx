@@ -1,12 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { message, Spin } from 'antd';
 import { useGetProductListQuery } from 'modules/product/redux/api';
-import styles from './ProductList.module.scss';
 import { ReactComponent as IconTest } from '../../../../assets/img/icon-test.svg';
-import { Spin } from 'antd';
+import { useTypedSelector } from 'hooks/useTypedSelector';
+import cn from 'classnames'
+import styles from './ProductList.module.scss';
 
 const ProductList = () => {
   const { data: products, isLoading } = useGetProductListQuery();
+  const { user } = useTypedSelector((state) => state.auth);
 
   if (isLoading) {
     return (
@@ -44,8 +47,13 @@ const ProductList = () => {
                   <IconTest />
                 </div>
                 <Link
-                  to={`/product/${product.id}`}
-                  className={styles.product__item__button}
+                  to={!user?.test_is_started ? `/product/${product.id}` : '/product/list'}
+                  className={cn(styles.product__item__button, user?.test_is_started ? styles.product__item__button__disabled : '')}
+                  onClick={() => {
+                    if (user?.test_is_started) {
+                      message.warning('Вы уже начали тест! Завершите его, чтобы начать другой!')
+                    }
+                  }}
                 >
                   Оплатить
                 </Link>
