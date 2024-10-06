@@ -44,11 +44,11 @@ const SignUpPage = () => {
                 >
                   <Form.Item
                     name="username"
-                    label="Логин"
-                    rules={[{ required: true, message: 'Пожалуйста, введите логин!' }]}
+                    label="Логин / ИИН"
+                    rules={[{ required: true, message: 'Пожалуйста, введите логин / ИИН!' }]}
                   >
                     <Input
-                      placeholder="Введите логин"
+                      placeholder="Введите логин / ИИН"
                       className='rounded-[10px] px-6 py-[18px]'
                     />
                   </Form.Item>

@@ -40,15 +40,15 @@ const LoginPage = () => {
                   <div className='grid grid-cols-1 gap-6'>
                     <Form.Item
                       name="username"
-                      rules={[{ required: true, message: 'Пожалуйста, введите логин!' }]}
+                      rules={[{ required: true, message: 'Пожалуйста, введите логин / ИИН!' }]}
                     >
                       <div className='flex flex-col gap-y-[10px]'>
                         <label htmlFor='login-username' className='text-lg font-bold leading-[1.6]'>
-                          Логин
+                          Логин / ИИН
                         </label>
                         <Input
                           type='text'
-                          placeholder='Введите логин'
+                          placeholder='Введите логин / ИИН'
                           className='rounded-[10px] border border-gray-300 bg-white px-6 py-[18px] font-bold text-black outline-none transition-all placeholder:text-slate-500 focus:border-colorMainPurple'
                         />
                       </div>
