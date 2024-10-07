@@ -57,6 +57,8 @@ const ProfilePage = () => {
   const handleUpdateBalance = () => {
     updateBalance().unwrap().then(() => {
       refetchUser()
+    }).catch((error) => {
+      message.error(error.data.error)
     })
   }
 
@@ -144,9 +146,9 @@ const ProfilePage = () => {
               <Button type="primary" onClick={() => setIsBalanceModalOpen(true)}>
                 Пополнить баланс
               </Button>
-              {/* <Button type="primary" onClick={handleUpdateBalance} icon={<ReloadOutlined />}>
+              <Button type="primary" onClick={handleUpdateBalance} icon={<ReloadOutlined />}>
                 Обновить баланс
-              </Button> */}
+              </Button>
             </div>
           </div>
         );
