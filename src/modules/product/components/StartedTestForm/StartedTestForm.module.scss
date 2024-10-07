@@ -4,6 +4,7 @@
     min-height: 600px;
     width: 100%;
     padding: 40px;
+    padding-top: 64px;
     border-radius: 16px;
     // background: linear-gradient(90deg, #84C2EB 0%, #3AC7B8 100%);
     background: linear-gradient(90deg, #C7A9FF 0%, #8D9CFC 100%);
@@ -55,11 +56,11 @@
 }
 
 .title {
-    margin-bottom: 24px;
-    color: var(--White, #FFF);
+    margin-bottom: 8px;
+    color: #8E9DFD;
     text-align: center;
     font-family: Gilroy;
-    font-size: 48px;
+    font-size: 56px;
     font-style: normal;
     font-weight: 700;
 }

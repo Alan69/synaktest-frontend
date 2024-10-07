@@ -187,7 +187,11 @@ const StartedTestForm = ({
 
   return (
     <>
-      {/* <h2 className={styles.title}>{title}</h2> */}
+      {timerInitialized && testIsStarted && timeLeft > 0 && (
+        <h2 className={styles.title}>
+          {productTitle}
+        </h2>
+      )}
 
       <div className={styles.testForm}>
         {timerInitialized && testIsStarted && timeLeft > 0 && (
@@ -197,11 +201,11 @@ const StartedTestForm = ({
             Осталось: {formatTime(timeLeft)}
           </div>
         )}
-        {timerInitialized && testIsStarted && timeLeft > 0 && (
+        {/* {timerInitialized && testIsStarted && timeLeft > 0 && (
           <h2 className={styles.title}>
             {productTitle}
           </h2>
-        )}
+        )} */}
 
         <Button
           onClick={() => {

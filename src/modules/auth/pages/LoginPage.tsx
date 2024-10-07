@@ -20,7 +20,7 @@ const LoginPage = () => {
       const { access: token, refresh: refreshToken } = response.data;
 
       dispatch(authActions.setToken({ token, refreshToken }));
-      navigate('/home');
+      navigate('/product/list');
       message.success('Авторизация прошла успешно!');
 
     } catch (error) {

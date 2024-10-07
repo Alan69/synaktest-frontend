@@ -20,12 +20,16 @@
     border: 1px solid #e0e0e0;
     transition: background-color 0.3s ease;
     &__correct {
-        background-color: #e6ffed;
-        border-color: #52c41a;
+        background-color: #e6ffed !important;
+        border-color: #52c41a !important;
     }
     &__inCorrect {
-        background-color: #fff1f0;
-        border-color: #ff4d4f;
+        // background-color: #fff1f0;
+        // border-color: #ff4d4f;
+    }
+    &__correctNSelected {
+        background-color: #67e78b !important;
+        border-color: #42b709 !important;
     }
 }
 
@@ -35,6 +39,6 @@
 }
 
 .selectedOption {
-    background-color: #e6f7ff;
-    border: 1px solid #1890ff;
+    background-color: #fff1f0;
+    border: 1px solid #ff4d4f;
 }

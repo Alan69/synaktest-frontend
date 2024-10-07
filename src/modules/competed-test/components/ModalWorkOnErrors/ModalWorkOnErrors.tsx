@@ -66,6 +66,7 @@ export const ModalWorkOnErrors = ({
                     styles.option,
                     isSelected ? styles.selectedOption : '',
                     isCorrect ? styles.option__correct : styles.option__inCorrect,
+                    isSelected && isCorrect ? styles.option__correctNSelected : ''
                   )}
                 >
                   <span className={styles.optionLabel}>
