@@ -19,7 +19,6 @@ const ProfilePage = () => {
   const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
 
   useEffect(() => {
-    // Определяем активный таб на основе текущего URL
     if (location.pathname === '/profile' || location.pathname === '/profile/personal-info') {
       setSelectedMenu('personal-info');
     } else if (location.pathname === '/profile/update-password') {
@@ -55,7 +54,9 @@ const ProfilePage = () => {
   };
 
   const handleUpdateBalance = () => {
-    updateBalance().unwrap().then(() => {
+    updateBalance().unwrap().then((res) => {
+      message.success(res.success)
+
       refetchUser()
     }).catch((error) => {
       message.error(error.data.error)
