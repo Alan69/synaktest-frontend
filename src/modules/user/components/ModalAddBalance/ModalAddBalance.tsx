@@ -27,16 +27,15 @@ export const ModalAddBalance: React.FC<ModalAddBalanceProps> = ({ isOpen, setIsO
         src={kaspiQr}
         alt="Kaspi QR Code"
       />
-      <Paragraph style={{ marginTop: '10px' }}>Ссылка для мобильных устройств:</Paragraph>
-      <a
+      <Paragraph style={{ marginTop: '10px' }}>Ссылка для мобильных устройств:       <a
         href="https://kaspi.kz/pay/_gate?action=service_with_subservice&service_id=3025&subservice_id=21723&region_id=18"
         target="_blank"
         rel="noopener noreferrer"
         style={{ color: '#1890ff' }}
       >
-        https://kaspi.kz/pay/_gate?action=service_with_subservice&service_id=3025&subservice_id=21723&region_id=18
+        здесь
       </a>
-
+      </Paragraph>
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
         <Button
           type="primary"
