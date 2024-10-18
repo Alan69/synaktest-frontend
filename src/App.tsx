@@ -4,7 +4,6 @@ import LoginPage from './modules/auth/pages/LoginPage';
 import useJOSAnimation from './hooks/useJOSAnimation';
 import Home from 'pages/home/Home';
 import ResetPassword from 'pages/common/ResetPassword';
-import ProductDetailsPage from 'modules/product/pages/ProductDetailsPage/ProductDetailsPage';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 import { useTypedSelector } from 'hooks/useTypedSelector';
 import { message } from 'antd';
@@ -16,6 +15,7 @@ import { UnauthorisedLayout } from 'layouts/UnauthorisedLayout/UnauthorisedLayou
 import MainLayout from 'layouts/MainLayout/MainLayout';
 import SignUpPage from 'modules/auth/pages/SignUpPage';
 import { ProductListPage } from 'modules/product/pages/ProductListPage/ProductListPage';
+import ProductDetailsPageNew from 'modules/product/pages/ProductDetailsPageNew/ProductDetailsPageNew';
 
 export const TimerContext = createContext<{
   timeLeft: number;
@@ -84,7 +84,6 @@ function App() {
     }
   }, []);
 
-
   useEffect(() => {
     const savedTestIsStarted = localStorage.getItem('testIsStarted');
     const savedTime = localStorage.getItem('remainingTime');
@@ -125,7 +124,6 @@ function App() {
       }, 1000);
     }
   };
-
 
   useEffect(() => {
     if (timerInitialized) {
@@ -175,16 +173,6 @@ function App() {
     navigate('/home');
   }
 
-  // if (user?.test_is_started) {
-  //   const productId = localStorage.getItem('product_id');
-
-  //   if (productId) {
-  //     navigate(`/product/${productId}`);
-  //   } else {
-  //     message.error('Ошибка: идентификатор продукта не найден.');
-  //   }
-  // }
-
   return (
     <TimerContext.Provider value={{ timeLeft, formatTime, testIsStarted, timerInitialized, handleCompleteTest, isCompleting }}>
       <Routes>
@@ -196,7 +184,7 @@ function App() {
           <Route path='/profile/update-password' element={<ProfilePage />} />
           <Route path='/profile/balance' element={<ProfilePage />} />
           <Route path="/product/list" element={<ProductListPage />} />
-          <Route path="/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/product/:id" element={<ProductDetailsPageNew />} />
           <Route path="/completed-test/list" element={<CompletedTestListPage />} />
           <Route path="/completed-test/:id" element={<CompletedTestDetailsPage />} />
           <Route path='*' element={<Home />} />

@@ -11,7 +11,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className={cn('z-[1] relative overflow-hidden rounded-tl-[30px] rounded-tr-[30px] bg-colorLinenRuffle lg:rounded-tl-[50px] lg:rounded-tr-[50px]', styles.footer)}>
+    <footer className={cn('z-[1] relative overflow-hidden bg-colorLinenRuffle', styles.footer)}>
       <div className='py-[30px] xl:pb-[60px] xl:pt-[65px]'>
         <div className='overflow-hidden'>
           <div className='footer-text-slider flex w-full items-center gap-x-[30px] whitespace-nowrap'>

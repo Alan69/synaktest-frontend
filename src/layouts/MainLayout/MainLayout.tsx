@@ -13,7 +13,7 @@ const MainLayout = () => {
   return (
     <div className='page-wrapper relative z-[1] bg-white'>
       {user?.test_is_started && location.pathname.includes(`${'product/'}${id}`) ? '' : <Header />}
-      <main className={styles.mainLayout}>
+      <main className={styles.mainLayout} style={{ paddingTop: user?.test_is_started && location.pathname.includes(`${'product/'}${id}`) ? 0 : 64 }}>
         <Outlet />
       </main>
       {/* {location.pathname.includes('product') ? '' : <Footer />} */}
