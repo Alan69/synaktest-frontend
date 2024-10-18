@@ -112,7 +112,7 @@ const ProductDetailsPage = () => {
   };
 
   const handleCheckboxChange = (id: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedCount >= MAX_SELECTION && !selectedSubjects[id]) {
+    if (selectedCount >= (MAX_SELECTION ? MAX_SELECTION : 1) && !selectedSubjects[id]) {
       message.warning(`Вы не можете выбрать более ${MAX_SELECTION} дополнительных предметов.`);
     } else {
       setSelectedSubjects({
