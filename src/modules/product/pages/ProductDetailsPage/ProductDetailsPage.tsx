@@ -11,7 +11,6 @@ import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 import { useTypedSelector } from 'hooks/useTypedSelector';
 import { ModalNotEnoughBalance } from 'modules/product/components/ModalNotEnoughBalance/ModalNotEnoughBalance';
 
-const MAX_SELECTION = 2;
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -34,6 +33,7 @@ const ProductDetailsPage = () => {
 
   const selectedCount = Object.values(selectedSubjects).filter(Boolean).length;
 
+  const MAX_SELECTION = product?.subject_limit;
 
   const handleStart = async () => {
     if (!product || !user) {

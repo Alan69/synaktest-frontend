@@ -5,6 +5,7 @@ type TProductResponse = {
   title: string;
   sum: number;
   time: number;
+  subject_limit: number;
 }
 
 type TSubjectResponse = {

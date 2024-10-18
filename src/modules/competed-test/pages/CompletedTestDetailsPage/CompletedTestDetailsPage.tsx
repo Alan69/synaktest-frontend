@@ -38,8 +38,8 @@ export const CompletedTestDetailsPage = () => {
     return `${hours} часа ${minutes} минут ${seconds} секунд`;
   };
 
-  const startTime = "2024-07-14T17:12:10.641383Z";
-  const finishTime = "2024-07-15T18:00:01.855334Z";
+  const startTime = data?.start_test_time ? data?.start_test_time : '';
+  const finishTime = data?.finish_test_time ? data?.finish_test_time : '';
 
   const durationFormatted = formatTimeDifference(startTime, finishTime);
 
@@ -125,7 +125,7 @@ export const CompletedTestDetailsPage = () => {
                   Дата начала
                 </div>
                 <div className={styles.mainInfoCards__item__value}>
-                  {startTime}
+                  {startTime || '-'}
                 </div>
               </div>
               <div className={styles.mainInfoCards__item__row}>
@@ -133,7 +133,7 @@ export const CompletedTestDetailsPage = () => {
                   Дата завершения
                 </div>
                 <div className={styles.mainInfoCards__item__value}>
-                  {finishTime}
+                  {finishTime || '-'}
                 </div>
               </div>
               <div className={styles.mainInfoCards__item__row}>
@@ -141,7 +141,7 @@ export const CompletedTestDetailsPage = () => {
                   Продолжительность(мин)
                 </div>
                 <div className={styles.mainInfoCards__item__value}>
-                  {durationFormatted}
+                  {durationFormatted || '-'}
                 </div>
               </div>
             </div>
