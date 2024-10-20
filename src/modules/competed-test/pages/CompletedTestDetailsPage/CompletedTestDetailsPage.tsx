@@ -260,11 +260,12 @@ export const CompletedTestDetailsPage = () => {
                   <div className={styles.errorWorkCard__question}>
                     {el.questions.map((question, index) => {
                       const selectedOption = question.selected_option;
-                      const isSelectedOptionCorrect = selectedOption
-                        ? question.all_options.find(
-                            (option) => option.id === selectedOption.id
-                          )?.is_correct
-                        : false;
+                      const isSelectedOptionCorrect =
+                        selectedOption &&
+                        question.all_options &&
+                        question.all_options.find(
+                          (option) => option.id === selectedOption.id
+                        )?.is_correct;
 
                       const number = index + 1;
 
