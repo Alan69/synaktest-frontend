@@ -1,27 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react';
-import styles from './StartedTestFormNew.module.scss';
-import { Button, Radio, Space } from 'antd';
-import { TimerContext } from 'App';
-import cn from 'classnames';
-import { ReactComponent as IconArrow } from 'assets/icons/arrow-left.svg';
-import { ModalFinishTestNew } from '../ModalFinishTestNew/ModalFinishTestNew';
+import React, { useState, useEffect, useContext } from "react";
+import styles from "./StartedTestFormNew.module.scss";
+import { Button, Radio, Space } from "antd";
+import { TimerContext } from "App";
+import cn from "classnames";
+import { ReactComponent as IconArrow } from "assets/icons/arrow-left.svg";
+import { ModalFinishTestNew } from "../ModalFinishTestNew/ModalFinishTestNew";
 
 type TProps = {
-  productTitle: string | undefined
-  handleOpenFinistTestModal: () => void
+  productTitle: string | undefined;
+  handleOpenFinistTestModal: () => void;
   unansweredQuestions: {
     testTitle: string;
     questionNumber: number;
     questionId: string;
-  }[]
-  setUnansweredQuestions: React.Dispatch<React.SetStateAction<{
-    testTitle: string;
-    questionNumber: number;
-    questionId: string;
-  }[]>>
-  isFinishTestModalOpen: boolean
-  setIsFinishTestModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
+  }[];
+  setUnansweredQuestions: React.Dispatch<
+    React.SetStateAction<
+      {
+        testTitle: string;
+        questionNumber: number;
+        questionId: string;
+      }[]
+    >
+  >;
+  isFinishTestModalOpen: boolean;
+  setIsFinishTestModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const StartedTestFormNew = ({
   productTitle,
@@ -31,24 +35,42 @@ const StartedTestFormNew = ({
   isFinishTestModalOpen,
   setIsFinishTestModalOpen,
 }: TProps) => {
-  // @ts-ignore
-  const { timeLeft, formatTime, testIsStarted, timerInitialized, handleCompleteTest, isCompleting } = useContext(TimerContext);
-  const testDataFromLocalStorage = localStorage.getItem('test');
-  const parsedData = testDataFromLocalStorage ? JSON.parse(testDataFromLocalStorage) : [];
+  const {
+    // @ts-ignore
+    timeLeft,
+    // @ts-ignore
+    formatTime,
+    // @ts-ignore
+    testIsStarted,
+    // @ts-ignore
+    timerInitialized,
+    // @ts-ignore
+    handleCompleteTest,
+    // @ts-ignore
+    isCompleting,
+  } = useContext(TimerContext);
+  const testDataFromLocalStorage = localStorage.getItem("test");
+  const parsedData = testDataFromLocalStorage
+    ? JSON.parse(testDataFromLocalStorage)
+    : [];
 
   const [currentTestIndex, setCurrentTestIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
-  const [questionIndices, setQuestionIndices] = useState<{ [key: number]: number }>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<{
+    [key: string]: string;
+  }>({});
+  const [questionIndices, setQuestionIndices] = useState<{
+    [key: number]: number;
+  }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedAnswers = localStorage.getItem('selectedAnswers');
+    const savedAnswers = localStorage.getItem("selectedAnswers");
     if (savedAnswers) {
       setSelectedAnswers(JSON.parse(savedAnswers));
     }
 
-    const savedQuestionIndices = localStorage.getItem('questionIndices');
+    const savedQuestionIndices = localStorage.getItem("questionIndices");
     if (savedQuestionIndices) {
       setQuestionIndices(JSON.parse(savedQuestionIndices));
     }
@@ -57,13 +79,20 @@ const StartedTestFormNew = ({
   useEffect(() => {
     const savedIndex = questionIndices[currentTestIndex] || 0;
     setCurrentQuestionIndex(savedIndex);
-    setSelectedOption(selectedAnswers[parsedData[currentTestIndex]?.questions[savedIndex]?.id] || null);
+    setSelectedOption(
+      selectedAnswers[
+        parsedData[currentTestIndex]?.questions[savedIndex]?.id
+      ] || null
+    );
   }, [currentTestIndex, parsedData, questionIndices, selectedAnswers]);
 
   const handleTestSelect = (index: number) => {
     setQuestionIndices((prev) => {
-      const updatedIndices = { ...prev, [currentTestIndex]: currentQuestionIndex };
-      localStorage.setItem('questionIndices', JSON.stringify(updatedIndices));
+      const updatedIndices = {
+        ...prev,
+        [currentTestIndex]: currentQuestionIndex,
+      };
+      localStorage.setItem("questionIndices", JSON.stringify(updatedIndices));
       return updatedIndices;
     });
 
@@ -71,19 +100,28 @@ const StartedTestFormNew = ({
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < parsedData[currentTestIndex].questions.length - 1) {
+    if (
+      currentQuestionIndex <
+      parsedData[currentTestIndex].questions.length - 1
+    ) {
       const nextQuestionIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextQuestionIndex);
 
       setQuestionIndices((prev) => {
-        const updatedIndices = { ...prev, [currentTestIndex]: nextQuestionIndex };
-        localStorage.setItem('questionIndices', JSON.stringify(updatedIndices));
+        const updatedIndices = {
+          ...prev,
+          [currentTestIndex]: nextQuestionIndex,
+        };
+        localStorage.setItem("questionIndices", JSON.stringify(updatedIndices));
         return updatedIndices;
       });
     } else if (currentTestIndex < parsedData.length - 1) {
       setQuestionIndices((prev) => {
-        const updatedIndices = { ...prev, [currentTestIndex]: currentQuestionIndex };
-        localStorage.setItem('questionIndices', JSON.stringify(updatedIndices));
+        const updatedIndices = {
+          ...prev,
+          [currentTestIndex]: currentQuestionIndex,
+        };
+        localStorage.setItem("questionIndices", JSON.stringify(updatedIndices));
         return updatedIndices;
       });
 
@@ -98,47 +136,58 @@ const StartedTestFormNew = ({
       setCurrentQuestionIndex(prevQuestionIndex);
 
       setQuestionIndices((prev) => {
-        const updatedIndices = { ...prev, [currentTestIndex]: prevQuestionIndex };
-        localStorage.setItem('questionIndices', JSON.stringify(updatedIndices));
+        const updatedIndices = {
+          ...prev,
+          [currentTestIndex]: prevQuestionIndex,
+        };
+        localStorage.setItem("questionIndices", JSON.stringify(updatedIndices));
         return updatedIndices;
       });
     } else if (currentTestIndex > 0) {
       setQuestionIndices((prev) => {
-        const updatedIndices = { ...prev, [currentTestIndex]: currentQuestionIndex };
-        localStorage.setItem('questionIndices', JSON.stringify(updatedIndices));
+        const updatedIndices = {
+          ...prev,
+          [currentTestIndex]: currentQuestionIndex,
+        };
+        localStorage.setItem("questionIndices", JSON.stringify(updatedIndices));
         return updatedIndices;
       });
 
       setCurrentTestIndex(currentTestIndex - 1);
-      setCurrentQuestionIndex(parsedData[currentTestIndex - 1].questions.length - 1);
+      setCurrentQuestionIndex(
+        parsedData[currentTestIndex - 1].questions.length - 1
+      );
     }
   };
 
   const handleOptionChange = (e: any) => {
     setSelectedOption(e.target.value);
 
-    const currentQuestionId = parsedData[currentTestIndex].questions[currentQuestionIndex].id;
+    const currentQuestionId =
+      parsedData[currentTestIndex].questions[currentQuestionIndex].id;
     const updatedAnswers = {
       ...selectedAnswers,
       [currentQuestionId]: e.target.value,
     };
 
     setSelectedAnswers(updatedAnswers);
-    localStorage.setItem('selectedAnswers', JSON.stringify(updatedAnswers));
+    localStorage.setItem("selectedAnswers", JSON.stringify(updatedAnswers));
   };
 
   const handleQuestionSelect = (index: number) => {
     const currentQuestionId = parsedData[currentTestIndex].questions[index].id;
 
-    const updatedUnansweredQuestions = unansweredQuestions.filter((question) => question.questionId !== currentQuestionId);
+    const updatedUnansweredQuestions = unansweredQuestions.filter(
+      (question) => question.questionId !== currentQuestionId
+    );
     setUnansweredQuestions(updatedUnansweredQuestions);
 
     const updatedAnswers = {
       ...selectedAnswers,
-      [currentQuestionId]: selectedAnswers[currentQuestionId] || '',
+      [currentQuestionId]: selectedAnswers[currentQuestionId] || "",
     };
     setSelectedAnswers(updatedAnswers);
-    localStorage.setItem('selectedAnswers', JSON.stringify(updatedAnswers));
+    localStorage.setItem("selectedAnswers", JSON.stringify(updatedAnswers));
 
     setCurrentQuestionIndex(index);
     // @ts-ignore
@@ -146,7 +195,7 @@ const StartedTestFormNew = ({
 
     setQuestionIndices((prev) => {
       const updatedIndices = { ...prev, [currentTestIndex]: index };
-      localStorage.setItem('questionIndices', JSON.stringify(updatedIndices));
+      localStorage.setItem("questionIndices", JSON.stringify(updatedIndices));
       return updatedIndices;
     });
   };
@@ -182,7 +231,9 @@ const StartedTestFormNew = ({
     currentQuestionIndex === currentTest.questions.length - 1;
 
   const isQuestionUnanswered = (questionId: string) => {
-    return unansweredQuestions.some((unanswered) => unanswered.questionId === questionId);
+    return unansweredQuestions.some(
+      (unanswered) => unanswered.questionId === questionId
+    );
   };
 
   const isQuestionAnswered = (questionId: string) => {
@@ -195,11 +246,8 @@ const StartedTestFormNew = ({
   return (
     <>
       <div className={styles.testForm}>
-
         {timerInitialized && testIsStarted && timeLeft > 0 && (
-          <div
-            className={cn(styles.timer)}
-          >
+          <div className={cn(styles.timer)}>
             Осталось: {formatTime(timeLeft)}
           </div>
         )}
@@ -224,13 +272,17 @@ const StartedTestFormNew = ({
           ))}
         </div>
 
-        <div className={styles.questionText}>{currentQuestion.text}</div>
+        <div className={styles.questionText}>{currentQuestion?.text}</div>
 
         <div className={styles.options}>
           <Radio.Group value={selectedOption} onChange={handleOptionChange}>
             <Space direction="vertical">
-              {currentQuestion.options.map((option: any) => (
-                <Radio key={option.id} value={option.id} className={styles.option}>
+              {currentQuestion?.options?.map((option: any) => (
+                <Radio
+                  key={option.id}
+                  value={option.id}
+                  className={styles.option}
+                >
                   {option.text}
                 </Radio>
               ))}
@@ -242,7 +294,10 @@ const StartedTestFormNew = ({
           <Button
             onClick={handlePreviousQuestion}
             disabled={currentTestIndex === 0 && currentQuestionIndex === 0}
-            className={cn(styles.testForm__button, styles.testForm__button__back)}
+            className={cn(
+              styles.testForm__button,
+              styles.testForm__button__back
+            )}
           >
             <IconArrow /> Предыдущий вопрос
           </Button>
@@ -250,7 +305,11 @@ const StartedTestFormNew = ({
           <Button
             onClick={() => handleTestSelect(currentTestIndex - 1)}
             disabled={currentTestIndex === 0}
-            className={cn(styles.testForm__button, styles.testForm__button__back, styles.testForm__button__top)}
+            className={cn(
+              styles.testForm__button,
+              styles.testForm__button__back,
+              styles.testForm__button__top
+            )}
           >
             <IconArrow /> Предыдущий предмет
           </Button>
@@ -261,14 +320,20 @@ const StartedTestFormNew = ({
                 handleOpenFinistTestModal();
                 findUnansweredQuestions();
               }}
-              className={cn(styles.testForm__button, styles.testForm__button__finish)}
+              className={cn(
+                styles.testForm__button,
+                styles.testForm__button__finish
+              )}
             >
               Завершить тест
             </Button>
           ) : (
             <Button
               onClick={handleNextQuestion}
-              disabled={currentTestIndex === parsedData.length - 1 && currentQuestionIndex === currentTest.questions.length - 1}
+              disabled={
+                currentTestIndex === parsedData.length - 1 &&
+                currentQuestionIndex === currentTest.questions.length - 1
+              }
               className={cn(styles.testForm__button, styles.testForm__button)}
             >
               Следующий вопрос <IconArrow />
@@ -278,12 +343,15 @@ const StartedTestFormNew = ({
           <Button
             onClick={() => handleTestSelect(currentTestIndex + 1)}
             disabled={currentTestIndex === parsedData.length - 1}
-            className={cn(styles.testForm__button, styles.testForm__button, styles.testForm__button__top)}
+            className={cn(
+              styles.testForm__button,
+              styles.testForm__button,
+              styles.testForm__button__top
+            )}
           >
             Следующий предмет <IconArrow />
           </Button>
         </div>
-
       </div>
       <ModalFinishTestNew
         isOpen={isFinishTestModalOpen}
