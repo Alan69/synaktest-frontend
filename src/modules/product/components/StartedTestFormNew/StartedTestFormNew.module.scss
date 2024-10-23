@@ -1,188 +1,195 @@
 .testForm {
-    text-align: center;
-    position: relative;
-    height: 100%;
-    min-height: 100vh;
-    width: 100%;
-    padding: 40px;
-    padding-top: 120px;
-    background: blue;
+  text-align: center;
+  position: relative;
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+  background: rgb(235 248 255);
+  display: flex;
+  flex-direction: column;
+  &__button {
     display: flex;
-    flex-direction: column;
-    &__button {
-        position: absolute;
-        right: 40px;
-        bottom: 40px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 16px;
-        border-radius: 6px;
-        border: 1px solid transparent !important;
-        background: transparent !important;
-        color: var(--White, #FFF);
-        text-align: center;
-        font-family: Gilroy;
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 140%;
-        transition: 0.3s all;
-        &:hover {
-            transition: 0.3s all;
-            border: 1px solid rgba(255, 255, 255, 0.50) !important;
-            background: rgba(255, 255, 255, 0.10) !important;
-            color: var(--White, #FFF) !important;
-        }
-        &__back {
-            right: unset;
-            left: 40px;
-            svg {
-                rotate: 180deg;
-            }
-        }
-        &__finish {
-            background-color: #fff !important;
-            color: blue !important;
-        }
-        &__prenatallyFinish {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background-color: #fff !important;
-            color: blue !important;
-        }
-        &__top {
-            top: 40px;
-            bottom: 0;
-        }
-    }
-}
-
-.title {
-    margin-bottom: 8px;
-    color: blue;
-    text-align: center;
-    font-family: Gilroy;
-    font-size: 56px;
-    font-style: normal;
-    font-weight: 700;
-}
-
-.timer {
-    height: 34px;
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 6px 18px;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
     border-radius: 6px;
-    border: 1px solid #FFF !important;
-    color: #fff !important;
+    border: 1px solid #4299e1 !important;
+    background: #4299e1 !important;
+    color: var(--White, #fff);
     text-align: center;
     font-family: Gilroy;
     font-size: 16px;
     font-weight: 500;
     line-height: 140%;
     transition: 0.3s all;
+    &:hover {
+      transition: 0.3s all;
+      border: 1px solid #329df3 !important;
+      background: #329df3 !important;
+      color: var(--White, #fff) !important;
+    }
+    &__white {
+      border: 1px solid #fff !important;
+      background: #fff !important;
+      color: #329df3;
+      &:hover {
+        transition: 0.3s all;
+        border: 1px solid #fff !important;
+        background: #fff !important;
+        color: #329df3 !important;
+      }
+    }
+    &__finish {
+      color: #f56565;
+      border: 1px solid #f56565 !important;
+      background-color: #fff !important;
+
+      &:hover {
+        color: #fff;
+        border: 1px solid #fff !important;
+        background-color: #f56565 !important;
+      }
+    }
+  }
+}
+
+.title {
+  margin-bottom: 8px;
+  color: blue;
+  text-align: center;
+  font-family: Gilroy;
+  font-size: 56px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  color: #000 !important;
+  text-align: center;
+  font-family: Gilroy;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 140%;
+  transition: 0.3s all;
 }
 
 .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .questionTabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  background-color: #fff;
 }
 
 .questionTab {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    border: 1px solid rgba(80, 56, 208, 0.30);
-    background: rgba(255, 255, 255, 0.20);
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    color: var(--White, #FFF);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #329df3;
+  background: #329df3;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  color: black;
+  text-align: center;
+  font-family: Gilroy;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  &:hover,
+  &__isActive {
+    border: 2px solid black;
     text-align: center;
     font-family: Gilroy;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
-    line-height: normal;
-    &:hover,
-    &__isActive {
-        background: var(--White, #FFF);
-        color: blue;
-        text-align: center;
-        font-family: Gilroy;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 500;
-    }
+    transform: scale(1.15);
+  }
 }
 
 .questionText {
-    margin-top: 64px;
-    margin-bottom: 32px;
-    text-align: center;
-    color: var(--White, #FFF);
-    font-family: Gilroy;
-    font-size: 32px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
+  padding: 0 40px;
+  margin-top: 12px;
+  margin-bottom: 32px;
+  text-align: center;
+  color: #000;
+  font-family: Gilroy;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
 }
 
 .options {
-    padding-bottom: 60px;
-    display: flex;
-    flex-direction: column;
-    text-align: left;
+  padding: 0 40px;
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .option {
-    margin-bottom: 24px;
-    color: var(--White, #FFF);
-    text-align: left;
-    font-family: Gilroy;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 140%;
+  margin-bottom: 36px;
+  color: #000;
+  text-align: left;
+  font-family: Gilroy;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 140%;
 }
 
 .navigationButtons {
-    display: flex;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  background-color: #329df3;
+
+  &__white {
     justify-content: space-between;
+    background-color: #fff;
+  }
 }
 
 .unanswered {
-    border-color: red;
+  border-color: red;
 }
 
 .answered {
-    border-color: green;
-    background-color: green;
-    color: #FFF;
+  border-color: #4db674;
+  background-color: #4db674;
+  color: #000;
 }
 
 .currentQuestionNumber {
-    text-align: center;
-    color: var(--White, #FFF);
-    font-family: Gilroy;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    margin-bottom: 32px;
+  text-align: center;
+  color: #000;
+  font-family: Gilroy;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background: #000;
 }

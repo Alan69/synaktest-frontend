@@ -3,7 +3,6 @@ import styles from "./StartedTestFormNew.module.scss";
 import { Button, Radio, Space } from "antd";
 import { TimerContext } from "App";
 import cn from "classnames";
-import { ReactComponent as IconArrow } from "assets/icons/arrow-left.svg";
 import { ModalFinishTestNew } from "../ModalFinishTestNew/ModalFinishTestNew";
 
 type TProps = {
@@ -246,15 +245,62 @@ const StartedTestFormNew = ({
   return (
     <>
       <div className={styles.testForm}>
-        {timerInitialized && testIsStarted && timeLeft > 0 && (
-          <div className={cn(styles.timer)}>
-            Осталось: {formatTime(timeLeft)}
-          </div>
-        )}
+        <div>
+          <div
+            className={styles.navigationButtons}
+            style={{
+              justifyContent: isLastQuestionOfLastTest
+                ? "space-between"
+                : "flex-end",
+            }}
+          >
+            {isLastQuestionOfLastTest ? (
+              <Button
+                onClick={() => {
+                  handleOpenFinistTestModal();
+                  findUnansweredQuestions();
+                }}
+                className={cn(
+                  styles.testForm__button,
+                  styles.testForm__button__finish
+                )}
+              >
+                Тестілеуді аяқтау
+              </Button>
+            ) : (
+              ""
+            )}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+              }}
+            >
+              <Button
+                onClick={() => handleTestSelect(currentTestIndex - 1)}
+                disabled={currentTestIndex === 0}
+                className={cn(
+                  styles.testForm__button,
+                  styles.testForm__button__white
+                )}
+              >
+                {"< Алдыңғы пән"}
+              </Button>
 
-        <h3 className={styles.currentQuestionNumber}>
-          Вопрос {currentQuestionNumber} из {totalQuestions}
-        </h3>
+              <Button
+                onClick={() => handleTestSelect(currentTestIndex + 1)}
+                disabled={currentTestIndex === parsedData.length - 1}
+                className={cn(
+                  styles.testForm__button,
+                  styles.testForm__button__white
+                )}
+              >
+                {"Келесі пән >"}
+              </Button>
+            </div>
+          </div>
+        </div>
 
         <div className={styles.questionTabs}>
           {currentTest.questions.map((question: any, index: number) => (
@@ -272,7 +318,50 @@ const StartedTestFormNew = ({
           ))}
         </div>
 
+        <div
+          className={cn(
+            styles.navigationButtons,
+            styles.navigationButtons__white
+          )}
+        >
+          <Button
+            onClick={handlePreviousQuestion}
+            disabled={currentTestIndex === 0 && currentQuestionIndex === 0}
+            className={cn(
+              styles.testForm__button,
+              styles.testForm__button__back
+            )}
+          >
+            {"< Алдыңғы сұрақ"}
+          </Button>
+
+          {timerInitialized && testIsStarted && timeLeft > 0 && (
+            <div className={cn(styles.timer)}>
+              Осталось: {formatTime(timeLeft)}
+            </div>
+          )}
+
+          <h3 className={styles.currentQuestionNumber}>
+            Сұрақ № {currentQuestionNumber}
+          </h3>
+
+          <Button
+            onClick={handleNextQuestion}
+            disabled={
+              currentTestIndex === parsedData.length - 1 &&
+              currentQuestionIndex === currentTest.questions.length - 1
+            }
+            className={cn(styles.testForm__button, styles.testForm__button)}
+          >
+            {"Келесі сұрақ >"}
+          </Button>
+        </div>
+
+        <div className={styles.divider} style={{ marginTop: 64 }}></div>
+
         <div className={styles.questionText}>{currentQuestion?.text}</div>
+
+        <div className={styles.divider}></div>
 
         <div className={styles.options}>
           <Radio.Group value={selectedOption} onChange={handleOptionChange}>
@@ -288,69 +377,6 @@ const StartedTestFormNew = ({
               ))}
             </Space>
           </Radio.Group>
-        </div>
-
-        <div className={styles.navigationButtons}>
-          <Button
-            onClick={handlePreviousQuestion}
-            disabled={currentTestIndex === 0 && currentQuestionIndex === 0}
-            className={cn(
-              styles.testForm__button,
-              styles.testForm__button__back
-            )}
-          >
-            <IconArrow /> Предыдущий вопрос
-          </Button>
-
-          <Button
-            onClick={() => handleTestSelect(currentTestIndex - 1)}
-            disabled={currentTestIndex === 0}
-            className={cn(
-              styles.testForm__button,
-              styles.testForm__button__back,
-              styles.testForm__button__top
-            )}
-          >
-            <IconArrow /> Предыдущий предмет
-          </Button>
-
-          {isLastQuestionOfLastTest ? (
-            <Button
-              onClick={() => {
-                handleOpenFinistTestModal();
-                findUnansweredQuestions();
-              }}
-              className={cn(
-                styles.testForm__button,
-                styles.testForm__button__finish
-              )}
-            >
-              Завершить тест
-            </Button>
-          ) : (
-            <Button
-              onClick={handleNextQuestion}
-              disabled={
-                currentTestIndex === parsedData.length - 1 &&
-                currentQuestionIndex === currentTest.questions.length - 1
-              }
-              className={cn(styles.testForm__button, styles.testForm__button)}
-            >
-              Следующий вопрос <IconArrow />
-            </Button>
-          )}
-
-          <Button
-            onClick={() => handleTestSelect(currentTestIndex + 1)}
-            disabled={currentTestIndex === parsedData.length - 1}
-            className={cn(
-              styles.testForm__button,
-              styles.testForm__button,
-              styles.testForm__button__top
-            )}
-          >
-            Следующий предмет <IconArrow />
-          </Button>
         </div>
       </div>
       <ModalFinishTestNew
