@@ -249,12 +249,26 @@ const StartedTestFormNew = ({
           <div
             className={styles.navigationButtons}
             style={{
-              justifyContent: isLastQuestionOfLastTest
-                ? "space-between"
-                : "flex-end",
+              justifyContent: "space-between",
             }}
           >
-            {isLastQuestionOfLastTest ? (
+            <div className={styles.navigationButtons}>
+              {/* {isLastQuestionOfLastTest ? (
+                <Button
+                  onClick={() => {
+                    handleOpenFinistTestModal();
+                    findUnansweredQuestions();
+                  }}
+                  className={cn(
+                    styles.testForm__button,
+                    styles.testForm__button__finish
+                  )}
+                >
+                  Тестілеуді аяқтау
+                </Button>
+              ) : (
+                ""
+              )} */}
               <Button
                 onClick={() => {
                   handleOpenFinistTestModal();
@@ -267,9 +281,7 @@ const StartedTestFormNew = ({
               >
                 Тестілеуді аяқтау
               </Button>
-            ) : (
-              ""
-            )}
+            </div>
             <div
               style={{
                 display: "flex",
@@ -340,6 +352,8 @@ const StartedTestFormNew = ({
               Осталось: {formatTime(timeLeft)}
             </div>
           )}
+
+          <h2 className={styles.currentTestTitle}>{currentTest.title}</h2>
 
           <h3 className={styles.currentQuestionNumber}>
             Сұрақ № {currentQuestionNumber}
