@@ -170,10 +170,6 @@ const SignUpPage = () => {
                         required: true,
                         message: "Пожалуйста, введите номер телефона!",
                       },
-                      {
-                        pattern: /^\+7\s\d{3}\s\d{3}\s\d{2}\s\d{2}$/,
-                        message: "Введите корректный номер телефона!",
-                      },
                     ]}
                   >
                     <InputMask
