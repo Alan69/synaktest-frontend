@@ -8,7 +8,6 @@ import {
   useStartTestMutation,
 } from "modules/product/redux/api";
 import { CustomCheckbox } from "../../../../components/CustomCheckbox/CustomCheckbox";
-import { ReactComponent as IconArrow } from "assets/icons/arrow-left.svg";
 import styles from "./ProductDetailsPageNew.module.scss";
 import StartedTestFormNew from "modules/product/components/StartedTestFormNew/StartedTestFormNew";
 import { useLazyGetAuthUserQuery } from "modules/user/redux/slices/api";
@@ -149,12 +148,14 @@ const ProductDetailsPageNew = () => {
 
   useEffect(() => {
     if (subjectList) {
-      const requiredSubjects = subjectList
-        .filter((subject) => subject.is_required)
-        .reduce((acc, subject) => {
-          acc[subject.id] = true;
-          return acc;
-        }, {} as { [key: string]: boolean });
+      const requiredSubjects = subjectList.reduce((acc, group) => {
+        group.tests.forEach((subject) => {
+          if (subject.is_required) {
+            acc[subject.id] = true;
+          }
+        });
+        return acc;
+      }, {} as { [key: string]: boolean });
 
       setSelectedRequiredSubjects(requiredSubjects);
     }
@@ -211,66 +212,95 @@ const ProductDetailsPageNew = () => {
                     Обязательные предметы:
                   </div>
                 )}
-                <div className={styles.testBlock__checkboxes}>
-                  {subjectList
-                    ?.filter((filter) =>
-                      title === "Купить продукт"
-                        ? filter.is_required
-                        : !filter.is_required
-                    )
-                    .map((el) => (
-                      <div
-                        className={styles.testBlock__checkboxes__item}
-                        key={el.id}
-                      >
-                        <CustomCheckbox
-                          checked={
+                {subjectList?.map((group) => {
+                  const displayGrade =
+                    title !== "Купить продукт" &&
+                    group.grade !== "0" &&
+                    group.tests.some((test) => !test.is_required);
+
+                  return (
+                    <div key={group.grade}>
+                      {displayGrade && (
+                        <div
+                          className={styles.testBlock__grade}
+                          style={{
+                            paddingBottom: 12,
+                          }}
+                        >
+                          {`Класс: ${group.grade}`}
+                        </div>
+                      )}
+                      <div className={styles.testBlock__checkboxes}>
+                        {group.tests
+                          .filter((test) =>
                             title === "Купить продукт"
-                              ? el.is_required
-                              : selectedSubjects[el.id]
-                          }
-                          title={el.title}
-                          onChange={handleCheckboxChange(el.id)}
-                        />
+                              ? test.is_required
+                              : !test.is_required
+                          )
+                          .map((el) => (
+                            <div
+                              className={styles.testBlock__checkboxes__item}
+                              key={el.id}
+                            >
+                              <CustomCheckbox
+                                checked={
+                                  title === "Купить продукт"
+                                    ? el.is_required
+                                    : selectedSubjects[el.id]
+                                }
+                                title={el.title}
+                                onChange={handleCheckboxChange(el.id)}
+                              />
+                            </div>
+                          ))}
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
-              <button
-                className={cn(
-                  styles.testBlock__button,
-                  styles.testBlock__button__back
-                )}
-                onClick={handleBack}
+              <div
+                style={{
+                  paddingTop: "12px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
-                {"< Назад"}
-              </button>
-              {title === "Купить продукт" ? (
                 <button
                   className={cn(
                     styles.testBlock__button,
-                    styles.testBlock__button__next
+                    styles.testBlock__button__back
                   )}
-                  onClick={handleNext}
-                  disabled={isProductLoading || isSubjectListLoading}
+                  onClick={handleBack}
                 >
-                  {"Далее >"}
+                  {"< Назад"}
                 </button>
-              ) : (
-                <button
-                  className={cn(
-                    styles.testBlock__button,
-                    styles.testBlock__button__start,
-                    selectedCount !== MAX_SELECTION
-                      ? styles.testBlock__button__disabled
-                      : ""
-                  )}
-                  onClick={handleStart}
-                  disabled={isProductLoading || isSubjectListLoading}
-                >
-                  Начать
-                </button>
-              )}
+                {title === "Купить продукт" ? (
+                  <button
+                    className={cn(
+                      styles.testBlock__button,
+                      styles.testBlock__button__next
+                    )}
+                    onClick={handleNext}
+                    disabled={isProductLoading || isSubjectListLoading}
+                  >
+                    {"Далее >"}
+                  </button>
+                ) : (
+                  <button
+                    className={cn(
+                      styles.testBlock__button,
+                      styles.testBlock__button__start,
+                      selectedCount !== MAX_SELECTION
+                        ? styles.testBlock__button__disabled
+                        : ""
+                    )}
+                    onClick={handleStart}
+                    disabled={isProductLoading || isSubjectListLoading}
+                  >
+                    Начать
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>

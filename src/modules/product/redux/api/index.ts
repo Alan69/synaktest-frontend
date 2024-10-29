@@ -8,10 +8,15 @@ type TProductResponse = {
   subject_limit: number;
 }
 
-type TSubjectResponse = {
+type TSubject = {
   id: string;
   title: string;
   is_required: boolean;
+}
+
+type TSubjectResponse = {
+  grade: string;
+  tests: TSubject[];
 }
 
 export type TTest = {
