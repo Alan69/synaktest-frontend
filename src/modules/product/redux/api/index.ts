@@ -29,6 +29,7 @@ export type TQuestion = {
   id: string
   text: string
   options: TOption[]
+  image?: string;
 }
 
 export type TOption = {

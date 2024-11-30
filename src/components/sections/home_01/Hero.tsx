@@ -8,7 +8,7 @@ const Hero = () => {
         <div className="global-container">
           <div className="mb-14 flex flex-col items-center text-center lg:mb-20">
             <h1 className="jos slide-from-bottom mb-6 max-w-[510px] lg:max-w-[768px] xl:max-w-[1076px]">
-              Synaqtest
+              Synaqtest.kz
             </h1>
             <p className="jos slide-from-bottom mb-11 max-w-[700px] text-lg font-semibold sm:text-xl xl:max-w-[980px]">
               Synaqtest — это образовательная компания, которая использует ИИ в

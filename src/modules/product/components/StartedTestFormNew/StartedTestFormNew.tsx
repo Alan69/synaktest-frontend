@@ -375,6 +375,16 @@ const StartedTestFormNew = ({
 
         <div className={styles.questionText}>{currentQuestion?.text}</div>
 
+        {currentQuestion?.img && (
+          <div className={styles.questionImage}>
+            <img
+              src={currentQuestion.img}
+              alt="Question Illustration"
+              className={styles.image}
+            />
+          </div>
+        )}
+
         <div className={styles.divider}></div>
 
         <div className={styles.options}>
