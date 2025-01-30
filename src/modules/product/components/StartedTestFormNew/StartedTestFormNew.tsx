@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./StartedTestFormNew.module.scss";
-import { Button, Radio, Space } from "antd";
+import { Button, Radio, Checkbox, Space } from "antd";
 import { TimerContext } from "App";
 import cn from "classnames";
 import { ModalFinishTestNew } from "../ModalFinishTestNew/ModalFinishTestNew";
@@ -55,13 +55,12 @@ const StartedTestFormNew = ({
 
   const [currentTestIndex, setCurrentTestIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{
-    [key: string]: string;
+    [key: string]: string | string[];
   }>({});
   const [questionIndices, setQuestionIndices] = useState<{
     [key: number]: number;
   }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   useEffect(() => {
     const savedAnswers = localStorage.getItem("selectedAnswers");
@@ -78,12 +77,7 @@ const StartedTestFormNew = ({
   useEffect(() => {
     const savedIndex = questionIndices[currentTestIndex] || 0;
     setCurrentQuestionIndex(savedIndex);
-    setSelectedOption(
-      selectedAnswers[
-        parsedData[currentTestIndex]?.questions[savedIndex]?.id
-      ] || null
-    );
-  }, [currentTestIndex, parsedData, questionIndices, selectedAnswers]);
+  }, [currentTestIndex, questionIndices]);
 
   const handleTestSelect = (index: number) => {
     setQuestionIndices((prev) => {
@@ -160,13 +154,30 @@ const StartedTestFormNew = ({
   };
 
   const handleOptionChange = (e: any) => {
-    setSelectedOption(e.target.value);
-
     const currentQuestionId =
       parsedData[currentTestIndex].questions[currentQuestionIndex].id;
     const updatedAnswers = {
       ...selectedAnswers,
       [currentQuestionId]: e.target.value,
+    };
+
+    setSelectedAnswers(updatedAnswers);
+    localStorage.setItem("selectedAnswers", JSON.stringify(updatedAnswers));
+  };
+
+  const handleMultiOptionChange = (checkedValues: string[]) => {
+    const currentQuestionId =
+      parsedData[currentTestIndex].questions[currentQuestionIndex].id;
+
+    // Allow only 2 selections for task_type=8 or task_type=6
+    if (checkedValues.length > 2) {
+      checkedValues = checkedValues.slice(0, 2);
+    }
+
+    // Store only the first selected option in the request
+    const updatedAnswers = {
+      ...selectedAnswers,
+      [currentQuestionId]: checkedValues[0], // Only the first option is sent
     };
 
     setSelectedAnswers(updatedAnswers);
@@ -181,16 +192,7 @@ const StartedTestFormNew = ({
     );
     setUnansweredQuestions(updatedUnansweredQuestions);
 
-    const updatedAnswers = {
-      ...selectedAnswers,
-      [currentQuestionId]: selectedAnswers[currentQuestionId] || "",
-    };
-    setSelectedAnswers(updatedAnswers);
-    localStorage.setItem("selectedAnswers", JSON.stringify(updatedAnswers));
-
     setCurrentQuestionIndex(index);
-    // @ts-ignore
-    setSelectedOption(updatedAnswers[currentQuestionId] || null);
 
     setQuestionIndices((prev) => {
       const updatedIndices = { ...prev, [currentTestIndex]: index };
@@ -200,12 +202,21 @@ const StartedTestFormNew = ({
   };
 
   const findUnansweredQuestions = () => {
-    // @ts-ignore
-    const unanswered = [];
+    const unanswered: {
+      testTitle: string;
+      questionNumber: number;
+      questionId: string;
+    }[] = [];
 
     parsedData.forEach((test: any, testIndex: number) => {
       test.questions.forEach((question: any, questionIndex: number) => {
-        if (!selectedAnswers[question.id]) {
+        const answer = selectedAnswers[question.id];
+        const isUnanswered =
+          question.task_type === 8 || question.task_type === 6
+            ? !Array.isArray(answer) || answer.length === 0 // Multi-select questions
+            : !answer; // Single-select questions
+  
+        if (isUnanswered) {
           unanswered.push({
             testTitle: test.title,
             questionNumber: questionIndex + 1,
@@ -215,7 +226,6 @@ const StartedTestFormNew = ({
       });
     });
 
-    // @ts-ignore
     setUnansweredQuestions(unanswered);
   };
 
@@ -225,22 +235,18 @@ const StartedTestFormNew = ({
 
   const currentTest = parsedData[currentTestIndex];
   const currentQuestion = currentTest.questions[currentQuestionIndex];
+  const currentQuestionNumber = currentQuestionIndex + 1;
   const isLastQuestionOfLastTest =
     currentTestIndex === parsedData.length - 1 &&
     currentQuestionIndex === currentTest.questions.length - 1;
 
-  const isQuestionUnanswered = (questionId: string) => {
-    return unansweredQuestions.some(
+  const isQuestionUnanswered = (questionId: string) =>
+    unansweredQuestions.some(
       (unanswered) => unanswered.questionId === questionId
     );
-  };
 
-  const isQuestionAnswered = (questionId: string) => {
-    return !!selectedAnswers[questionId];
-  };
-
-  const currentQuestionNumber = currentQuestionIndex + 1;
-  const totalQuestions = currentTest.questions.length;
+  const isQuestionAnswered = (questionId: string) =>
+    !!selectedAnswers[questionId];
 
   return (
     <>
@@ -252,36 +258,18 @@ const StartedTestFormNew = ({
               justifyContent: "space-between",
             }}
           >
-            <div className={styles.navigationButtons}>
-              {/* {isLastQuestionOfLastTest ? (
-                <Button
-                  onClick={() => {
-                    handleOpenFinistTestModal();
-                    findUnansweredQuestions();
-                  }}
-                  className={cn(
-                    styles.testForm__button,
-                    styles.testForm__button__finish
-                  )}
-                >
-                  Тестілеуді аяқтау
-                </Button>
-              ) : (
-                ""
-              )} */}
-              <Button
-                onClick={() => {
-                  handleOpenFinistTestModal();
-                  findUnansweredQuestions();
-                }}
-                className={cn(
-                  styles.testForm__button,
-                  styles.testForm__button__finish
-                )}
-              >
-                Тестілеуді аяқтау
-              </Button>
-            </div>
+            <Button
+              onClick={() => {
+                handleOpenFinistTestModal();
+                findUnansweredQuestions();
+              }}
+              className={cn(
+                styles.testForm__button,
+                styles.testForm__button__finish
+              )}
+            >
+              Тестілеуді аяқтау
+            </Button>
             <div
               style={{
                 display: "flex",
@@ -359,12 +347,11 @@ const StartedTestFormNew = ({
             Сұрақ № {currentQuestionNumber}
           </h3>
 
+          <h3>task_type: {currentQuestion?.task_type}</h3>
+
           <Button
             onClick={handleNextQuestion}
-            disabled={
-              currentTestIndex === parsedData.length - 1 &&
-              currentQuestionIndex === currentTest.questions.length - 1
-            }
+            disabled={isLastQuestionOfLastTest}
             className={cn(styles.testForm__button, styles.testForm__button)}
           >
             {"Келесі сұрақ >"}
@@ -388,19 +375,55 @@ const StartedTestFormNew = ({
         <div className={styles.divider}></div>
 
         <div className={styles.options}>
-          <Radio.Group value={selectedOption} onChange={handleOptionChange}>
-            <Space direction="vertical">
-              {currentQuestion?.options?.map((option: any) => (
-                <Radio
-                  key={option.id}
-                  value={option.id}
-                  className={styles.option}
-                >
-                  {option.text}
-                </Radio>
-              ))}
-            </Space>
-          </Radio.Group>
+            {currentQuestion?.task_type === 8 || currentQuestion?.task_type === 6 ? (
+              <Checkbox.Group
+                value={
+                  Array.isArray(selectedAnswers[currentQuestion.id])
+                    ? (selectedAnswers[currentQuestion.id] as string[])
+                    : [] // Ensure it's always an array
+                }
+                onChange={handleMultiOptionChange}
+              >
+                <Space direction="vertical">
+                  {currentQuestion.options.map((option: any) => (
+                    <Checkbox key={option.id} value={option.id}>
+                      {option.img && (
+                        <img
+                          src={option.img}
+                          alt="Option Illustration"
+                          className={styles.optionImage}
+                        />
+                      )}
+                      {option.text}
+                    </Checkbox>
+                  ))}
+                </Space>
+              </Checkbox.Group>
+            ) : (
+            <Radio.Group
+              value={
+                typeof selectedAnswers[currentQuestion.id] === "string"
+                  ? selectedAnswers[currentQuestion.id]
+                  : null // Ensure it's a string or null
+              }
+              onChange={handleOptionChange}
+            >
+              <Space direction="vertical">
+                {currentQuestion.options.map((option: any) => (
+                  <Radio key={option.id} value={option.id}>
+                    {option.img && (
+                      <img
+                        src={option.img}
+                        alt="Option Illustration"
+                        className={styles.optionImage}
+                      />
+                    )}
+                    {option.text}
+                  </Radio>
+                ))}
+              </Space>
+            </Radio.Group>
+          )}
         </div>
       </div>
       <ModalFinishTestNew

@@ -29,12 +29,14 @@ export type TQuestion = {
   id: string
   text: string
   options: TOption[]
-  image?: string;
+  img?: string
+  task_type?: number
 }
 
 export type TOption = {
   id: string
   text: string
+  img?: string
 }
 
 export type TStartTestRequest = {
