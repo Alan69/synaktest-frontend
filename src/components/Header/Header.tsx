@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { Layout, message, Tag, Tooltip } from 'antd';
+import { Layout, message, Tooltip } from 'antd';
 import { PlusCircleFilled, ReloadOutlined } from '@ant-design/icons';
 
 import Logo from '../logo/Logo';
@@ -21,7 +21,7 @@ const Header = () => {
   const { token } = useTypedSelector((state) => state.auth);
 
   const [updateBalance] = useUpdateBalanceMutation();
-  const { data: user, isLoading: isUserLoading, refetch: refetchUser } = useGetAuthUserQuery();
+  const { data: user, refetch: refetchUser } = useGetAuthUserQuery();
 
   const [mobileMenu, setMobileMenu] = useState(false);
   const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);

@@ -106,7 +106,7 @@ function App() {
     setTimerInitialized(true);
   }, []);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (testIsStarted && !intervalRef.current && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
@@ -123,7 +123,7 @@ function App() {
         });
       }, 1000);
     }
-  };
+  }, [testIsStarted, timeLeft, handleCompleteTest]);
 
   useEffect(() => {
     if (timerInitialized) {
@@ -136,7 +136,7 @@ function App() {
         intervalRef.current = null;
       }
     };
-  }, [timeLeft, testIsStarted, timerInitialized, handleCompleteTest]);
+  }, [timeLeft, testIsStarted, timerInitialized, handleCompleteTest, startTimer]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
