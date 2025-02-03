@@ -177,7 +177,7 @@ const StartedTestFormNew = ({
     // Store only the first selected option in the request
     const updatedAnswers = {
       ...selectedAnswers,
-      [currentQuestionId]: checkedValues[0], // Only the first option is sent
+      [currentQuestionId]: checkedValues, // Only the first option is sent
     };
 
     setSelectedAnswers(updatedAnswers);

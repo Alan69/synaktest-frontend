@@ -56,10 +56,10 @@ export type TCompleteTestRequest = {
     id: string;
     questions: {
       id: string;
-      option_id: string
-    }[]
-  }[]
-}
+      option_id: string[];
+    }[];
+  }[];
+};
 
 export type TCompleteTestResponse = {
   completed_test_id: string;

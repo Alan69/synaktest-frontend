@@ -156,12 +156,10 @@
       cursor: pointer;
       &__true {
         background: linear-gradient(90deg, #84c2eb 0%, #3ac7b8 100%);
-        color: #3bc8b9;
         color: #fff;
       }
       &__false {
         background: linear-gradient(90deg, #f38da8 0%, #f58a82 100%);
-        color: #f68b83;
         color: #fff;
       }
       &__isNull {
