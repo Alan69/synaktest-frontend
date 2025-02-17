@@ -25,17 +25,21 @@ const SignUpPage = () => {
     }
 
     try {
+      console.log("Sending signup request with data:", { ...values, phone_number: phoneNumber });
       const response = await signUp({
         ...values,
         phone_number: phoneNumber,
         region: values.region,
+        referral_code: values.referral_code
       });
+      console.log("Signup response:", response);
       // @ts-ignore
       const { access: token, refresh: refreshToken } = response.data;
 
       dispatch(authActions.setToken({ token, refreshToken }));
       message.success("Регистрация успешна! Пожалуйста, войдите в систему.");
     } catch (error) {
+      console.error("Signup error:", error);
       message.error(
         "Ошибка регистрации. Пожалуйста, проверьте введенные данные."
       );
@@ -222,6 +226,16 @@ const SignUpPage = () => {
                   >
                     <Input.Password
                       placeholder="............"
+                      className="rounded-[10px]"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="referral_code"
+                    label="Реферальный код"
+                  >
+                    <Input
+                      placeholder="Введите реферальный код (если есть)"
                       className="rounded-[10px]"
                     />
                   </Form.Item>

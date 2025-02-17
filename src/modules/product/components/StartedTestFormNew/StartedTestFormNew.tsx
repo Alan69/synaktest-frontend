@@ -26,6 +26,11 @@ type TProps = {
   setIsFinishTestModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+interface Option {
+  id: string;
+  text: string;
+}
+
 const StartedTestFormNew = ({
   productTitle,
   handleOpenFinistTestModal,
@@ -169,15 +174,10 @@ const StartedTestFormNew = ({
     const currentQuestionId =
       parsedData[currentTestIndex].questions[currentQuestionIndex].id;
 
-    // Allow only 2 selections for task_type=8 or task_type=6
-    if (checkedValues.length > 2) {
-      checkedValues = checkedValues.slice(0, 2);
-    }
-
-    // Store only the first selected option in the request
+    // Remove the 2-option limit for task_type 8
     const updatedAnswers = {
       ...selectedAnswers,
-      [currentQuestionId]: checkedValues, // Only the first option is sent
+      [currentQuestionId]: checkedValues,
     };
 
     setSelectedAnswers(updatedAnswers);
@@ -360,7 +360,109 @@ const StartedTestFormNew = ({
 
         <div className={styles.divider} style={{ marginTop: 64 }}></div>
 
-        <div className={styles.questionText}>{currentQuestion?.text}</div>
+        {currentQuestion?.task_type === 8 ? (
+          <div className={styles.matchingContainer}>
+            <div className={styles.questionText}>{currentQuestion?.text}</div>
+            <div className={styles.matchingTable}>
+              <div className={styles.matchingRow}>
+                <div className={styles.matchingCell}>A)</div>
+                <div className={styles.matchingCell}>{currentQuestion?.text2 || "Loading..."}</div>
+                <div className={styles.matchingCell}>
+                  <select 
+                    className={styles.matchingSelect}
+                    value={
+                      Array.isArray(selectedAnswers[currentQuestion?.id])
+                        ? (selectedAnswers[currentQuestion?.id] as string[]).find((answerId: string) => 
+                            currentQuestion?.options?.findIndex((opt: Option) => opt.id === answerId) < 4
+                          ) || ""
+                        : ""
+                    }
+                    onChange={(e) => {
+                      const existingAnswers = Array.isArray(selectedAnswers[currentQuestion?.id])
+                        ? selectedAnswers[currentQuestion?.id] as string[]
+                        : [];
+                      
+                      // Remove any existing selections from first row (options 1-4)
+                      const otherRowAnswers = existingAnswers.filter(id => 
+                        currentQuestion?.options?.findIndex((opt: Option) => opt.id === id) >= 4
+                      );
+
+                      if (e.target.value) {
+                        handleMultiOptionChange([...otherRowAnswers, e.target.value]);
+                      } else {
+                        handleMultiOptionChange([...otherRowAnswers]);
+                      }
+                    }}
+                  >
+                    <option value="">Выберите ответ</option>
+                    {currentQuestion?.options?.slice(0, 4).map((option: Option, index: number) => (
+                      <option key={option.id} value={option.id}>
+                        {option.text}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className={styles.matchingRow}>
+                <div className={styles.matchingCell}>B)</div>
+                <div className={styles.matchingCell}>{currentQuestion?.text3 || "Loading..."}</div>
+                <div className={styles.matchingCell}>
+                  <select 
+                    className={styles.matchingSelect}
+                    value={
+                      Array.isArray(selectedAnswers[currentQuestion?.id])
+                        ? (selectedAnswers[currentQuestion?.id] as string[]).find((answerId: string) => 
+                            currentQuestion?.options?.findIndex((opt: Option) => opt.id === answerId) >= 4
+                          ) || ""
+                        : ""
+                    }
+                    onChange={(e) => {
+                      const existingAnswers = Array.isArray(selectedAnswers[currentQuestion?.id])
+                        ? selectedAnswers[currentQuestion?.id] as string[]
+                        : [];
+                      
+                      // Remove any existing selections from second row (options 5-8)
+                      const otherRowAnswers = existingAnswers.filter(id => 
+                        currentQuestion?.options?.findIndex((opt: Option) => opt.id === id) < 4
+                      );
+
+                      if (e.target.value) {
+                        handleMultiOptionChange([...otherRowAnswers, e.target.value]);
+                      } else {
+                        handleMultiOptionChange([...otherRowAnswers]);
+                      }
+                    }}
+                  >
+                    <option value="">Выберите ответ</option>
+                    {currentQuestion?.options?.slice(4, 8).map((option: Option, index: number) => (
+                      <option key={option.id} value={option.id}>
+                        {option.text}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className={styles.questionText}>{currentQuestion?.text}</div>
+            <div className={styles.options}>
+              <Radio.Group 
+                value={currentQuestion?.id ? selectedAnswers[currentQuestion.id] : undefined} 
+                onChange={handleOptionChange}
+              >
+                <Space direction="vertical">
+                  {currentQuestion?.options?.map((option: any) => (
+                    <Radio key={option.id} value={option.id} className={styles.option}>
+                      {option.text}
+                    </Radio>
+                  ))}
+                </Space>
+              </Radio.Group>
+            </div>
+          </>
+        )}
 
         {currentQuestion?.img && (
           <div className={styles.questionImage}>
@@ -371,60 +473,6 @@ const StartedTestFormNew = ({
             />
           </div>
         )}
-
-        <div className={styles.divider}></div>
-
-        <div className={styles.options}>
-            {currentQuestion?.task_type === 8 || currentQuestion?.task_type === 6 ? (
-              <Checkbox.Group
-                value={
-                  Array.isArray(selectedAnswers[currentQuestion.id])
-                    ? (selectedAnswers[currentQuestion.id] as string[])
-                    : [] // Ensure it's always an array
-                }
-                onChange={handleMultiOptionChange}
-              >
-                <Space direction="vertical">
-                  {currentQuestion.options.map((option: any) => (
-                    <Checkbox key={option.id} value={option.id}>
-                      {option.img && (
-                        <img
-                          src={option.img}
-                          alt="Option Illustration"
-                          className={styles.optionImage}
-                        />
-                      )}
-                      {option.text}
-                    </Checkbox>
-                  ))}
-                </Space>
-              </Checkbox.Group>
-            ) : (
-            <Radio.Group
-              value={
-                typeof selectedAnswers[currentQuestion.id] === "string"
-                  ? selectedAnswers[currentQuestion.id]
-                  : null // Ensure it's a string or null
-              }
-              onChange={handleOptionChange}
-            >
-              <Space direction="vertical">
-                {currentQuestion.options.map((option: any) => (
-                  <Radio key={option.id} value={option.id}>
-                    {option.img && (
-                      <img
-                        src={option.img}
-                        alt="Option Illustration"
-                        className={styles.optionImage}
-                      />
-                    )}
-                    {option.text}
-                  </Radio>
-                ))}
-              </Space>
-            </Radio.Group>
-          )}
-        </div>
       </div>
       <ModalFinishTestNew
         isOpen={isFinishTestModalOpen}

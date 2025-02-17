@@ -102,6 +102,14 @@ export const userApi = baseApi.injectEndpoints({
       transformResponse: (response: TUpdateBalanceResponse) => response,
       extraOptions: { showErrors: false },
     }),
+    generateReferralLink: build.mutation<{ referral_link: string, referral_bonus: string }, void>({
+      query: () => ({
+        url: '/user/referral/',
+        method: 'POST'
+      }),
+      transformResponse: (response: { referral_link: string, referral_bonus: string }) => response,
+      extraOptions: { showErrors: false },
+    }),
   }),
   overrideExisting: false,
 });
@@ -111,5 +119,6 @@ export const {
   useGetAuthUserQuery,
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
-  useUpdateBalanceMutation
+  useUpdateBalanceMutation,
+  useGenerateReferralLinkMutation
 } = userApi;

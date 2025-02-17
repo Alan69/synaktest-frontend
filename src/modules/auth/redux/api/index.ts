@@ -16,6 +16,7 @@ type TSignUp = {
   region: string;
   school: string;
   phone_number: string;
+  referral_code?: string;
 }
 
 type TLoginResponse = {
@@ -51,7 +52,7 @@ export const authApi = baseApi.injectEndpoints({
       extraOptions: { showErrors: false }
     }),
     signUp: build.mutation<TSignUpResponse, TSignUp>({
-      query: ({ username, email, password, password2, first_name, last_name, region, school, phone_number  }) => ({
+      query: ({ username, email, password, password2, first_name, last_name, region, school, phone_number, referral_code  }) => ({
         url: '/register/',
         method: 'POST',
         body: {
@@ -63,7 +64,8 @@ export const authApi = baseApi.injectEndpoints({
           last_name,
           region,
           school,
-          phone_number
+          phone_number,
+          referral_code
         }
       }),
 			transformResponse: (response: TSignUpResponse) => response,

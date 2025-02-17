@@ -183,6 +183,7 @@ function App() {
           <Route path='/profile/personal-info' element={<ProfilePage />} />
           <Route path='/profile/update-password' element={<ProfilePage />} />
           <Route path='/profile/balance' element={<ProfilePage />} />
+          <Route path='/profile/referral' element={<ProfilePage />} />
           <Route path="/product/list" element={<ProductListPage />} />
           <Route path="/product/:id" element={<ProductDetailsPageNew />} />
           <Route path="/completed-test/list" element={<CompletedTestListPage />} />

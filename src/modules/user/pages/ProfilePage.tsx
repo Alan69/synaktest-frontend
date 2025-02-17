@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Menu, Form, Input, Button, Select, message } from "antd";
+import { Menu, Form, Input, Button, Select, message, Alert } from "antd";
 import InputMask from "react-input-mask";
 import {
   UserOutlined,
   LockOutlined,
   DollarOutlined,
   ReloadOutlined,
+  ShareAltOutlined,
 } from "@ant-design/icons";
 import {
   TUser,
@@ -14,6 +15,7 @@ import {
   useGetAuthUserQuery,
   useUpdateBalanceMutation,
   useUpdateUserProfileMutation,
+  useGenerateReferralLinkMutation,
 } from "modules/user/redux/slices/api";
 import { ModalAddBalance } from "../components/ModalAddBalance/ModalAddBalance";
 import Title from "antd/es/typography/Title";
@@ -40,6 +42,7 @@ const ProfilePage = () => {
   const [changePassword, { isLoading: isChangingPassword }] =
     useChangePasswordMutation();
   const [updateBalance] = useUpdateBalanceMutation();
+  const [generateReferralLink] = useGenerateReferralLinkMutation();
 
   useEffect(() => {
     if (
@@ -51,6 +54,8 @@ const ProfilePage = () => {
       setSelectedMenu("update-password");
     } else if (location.pathname === "/profile/balance") {
       setSelectedMenu("balance");
+    } else if (location.pathname === "/profile/referral") {
+      setSelectedMenu("referral");
     }
   }, [location.pathname]);
 
@@ -101,6 +106,16 @@ const ProfilePage = () => {
       .catch((error) => {
         message.error(error.data.error);
       });
+  };
+
+  const handleGenerateReferralLink = async () => {
+    try {
+      const result = await generateReferralLink().unwrap();
+      await refetchUser();
+      message.success('Реферальная ссылка успешно создана!');
+    } catch (error: any) {
+      message.error('Ошибка при создании реферальной ссылки');
+    }
   };
 
   const renderContent = () => {
@@ -296,6 +311,55 @@ const ProfilePage = () => {
             </div>
           </div>
         );
+      case "referral":
+        return (
+          <div>
+            <Title level={4}>Реферальная программа</Title>
+            <p>Заработано с рефералов: {user.referral_bonus} KZT</p>
+            {user.referral_link ? (
+              <div style={{ marginTop: '20px' }}>
+                <p>Ваша реферальная ссылка:</p>
+                <Input.Group compact>
+                  <Input
+                    style={{ width: 'calc(100% - 200px)' }}
+                    value={user.referral_link}
+                    readOnly
+                  />
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.referral_link);
+                      message.success('Ссылка скопирована!');
+                    }}
+                  >
+                    Копировать ссылку
+                  </Button>
+                </Input.Group>
+              </div>
+            ) : (
+              <Button
+                type="primary"
+                onClick={handleGenerateReferralLink}
+                icon={<ShareAltOutlined />}
+              >
+                Создать реферальную ссылку
+              </Button>
+            )}
+            <div style={{ marginTop: '20px' }}>
+              <Alert
+                message="Как это работает?"
+                description={
+                  <ul>
+                    <li>Создайте свою реферальную ссылку</li>
+                    <li>Поделитесь ссылкой с друзьями</li>
+                    <li>Когда друг регистрируется по вашей ссылке, вы получаете 1500 KZT на баланс</li>
+                  </ul>
+                }
+                type="info"
+              />
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -311,6 +375,9 @@ const ProfilePage = () => {
         break;
       case "balance":
         navigate("/profile/balance");
+        break;
+      case "referral":
+        navigate("/profile/referral");
         break;
       default:
         navigate("/profile");
@@ -335,6 +402,9 @@ const ProfilePage = () => {
           </Menu.Item>
           <Menu.Item key="balance" icon={<DollarOutlined />}>
             Баланс
+          </Menu.Item>
+          <Menu.Item key="referral" icon={<ShareAltOutlined />}>
+            Реферальная программа
           </Menu.Item>
         </Menu>
         <div style={{ flex: 1, padding: "20px", backgroundColor: "#fff" }}>
