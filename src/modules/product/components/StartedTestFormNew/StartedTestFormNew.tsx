@@ -446,6 +446,7 @@ const StartedTestFormNew = ({
           </div>
         ) : (
           <>
+            <div className={styles.questionText}>{currentQuestion?.text}</div>
             {currentQuestion?.img && (
               <div className={styles.questionImage}>
                 <img
@@ -455,7 +456,6 @@ const StartedTestFormNew = ({
                 />
               </div>
             )}
-            <div className={styles.questionText}>{currentQuestion?.text}</div>
             <div className={styles.options}>
               <Radio.Group 
                 value={currentQuestion?.id ? selectedAnswers[currentQuestion.id] : undefined} 
