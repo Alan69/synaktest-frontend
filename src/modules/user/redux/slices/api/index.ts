@@ -10,9 +10,20 @@ export type TUser = {
   school: string
   phone_number: string
   balance: string
-  referral_link: any
+  referral_link: string | null
   referral_bonus: string
+  referral_percentage: string
+  referral_expiry_date: string | null
+  referral_status: string
   test_is_started: boolean
+}
+
+export type TReferralResponse = {
+  referral_link: string
+  referral_bonus: string
+  referral_percentage: string
+  referral_expiry_date: string
+  referral_status: string
 }
 
 export type TUserData = {
@@ -45,6 +56,18 @@ type TUpdateUser = {
   school: string;
   referral_link?: string;
   referral_bonus?: string
+}
+
+export type TReferredUser = {
+  username: string;
+  first_name: string;
+  last_name: string;
+  joined_at: string;
+  total_purchases: string;
+}
+
+export type TReferredUsersResponse = {
+  referrals: TReferredUser[];
 }
 
 export const userApi = baseApi.injectEndpoints({
@@ -102,12 +125,19 @@ export const userApi = baseApi.injectEndpoints({
       transformResponse: (response: TUpdateBalanceResponse) => response,
       extraOptions: { showErrors: false },
     }),
-    generateReferralLink: build.mutation<{ referral_link: string, referral_bonus: string }, void>({
+    generateReferralLink: build.mutation<TReferralResponse, void>({
       query: () => ({
         url: '/user/referral/',
         method: 'POST'
       }),
-      transformResponse: (response: { referral_link: string, referral_bonus: string }) => response,
+      transformResponse: (response: TReferralResponse) => response,
+      extraOptions: { showErrors: false },
+    }),
+    getReferredUsers: build.query<TReferredUser[], void>({
+      query: () => ({
+        url: '/user/referrals/',
+        method: 'GET'
+      }),
       extraOptions: { showErrors: false },
     }),
   }),
@@ -120,5 +150,6 @@ export const {
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
   useUpdateBalanceMutation,
-  useGenerateReferralLinkMutation
+  useGenerateReferralLinkMutation,
+  useGetReferredUsersQuery
 } = userApi;

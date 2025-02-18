@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Menu, Form, Input, Button, Select, message, Alert } from "antd";
+import { Menu, Form, Input, Button, Select, message, Alert, Tag, Table } from "antd";
 import InputMask from "react-input-mask";
 import {
   UserOutlined,
@@ -8,6 +8,7 @@ import {
   DollarOutlined,
   ReloadOutlined,
   ShareAltOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import {
   TUser,
@@ -16,6 +17,7 @@ import {
   useUpdateBalanceMutation,
   useUpdateUserProfileMutation,
   useGenerateReferralLinkMutation,
+  useGetReferredUsersQuery,
 } from "modules/user/redux/slices/api";
 import { ModalAddBalance } from "../components/ModalAddBalance/ModalAddBalance";
 import Title from "antd/es/typography/Title";
@@ -42,7 +44,9 @@ const ProfilePage = () => {
   const [changePassword, { isLoading: isChangingPassword }] =
     useChangePasswordMutation();
   const [updateBalance] = useUpdateBalanceMutation();
-  const [generateReferralLink] = useGenerateReferralLinkMutation();
+  const [generateReferralLink, { isLoading: isGeneratingLink }] =
+    useGenerateReferralLinkMutation();
+  const { data: referredUsers, isLoading: isLoadingReferrals } = useGetReferredUsersQuery();
 
   useEffect(() => {
     if (
@@ -59,15 +63,18 @@ const ProfilePage = () => {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    console.log('Referred users:', referredUsers);
+  }, [referredUsers]);
+
   const handleProfileUpdate = async (values: TUser) => {
     const phoneNumber = values.phone_number.replace(/\D/g, "");
-
     try {
       await updateUserProfile({
         ...values,
         phone_number: phoneNumber,
-        // @ts-ignore
-        region: values.region.id,
+        region: values.region,
+        referral_link: values.referral_link || undefined
       }).unwrap();
       message.success("Профиль успешно обновлен!");
     } catch (error: any) {
@@ -116,6 +123,127 @@ const ProfilePage = () => {
     } catch (error: any) {
       message.error('Ошибка при создании реферальной ссылки');
     }
+  };
+
+  const renderReferralContent = () => {
+    const columns = [
+      {
+        title: 'ИИН',
+        dataIndex: 'username',
+        key: 'username',
+      },
+      {
+        title: 'Имя',
+        dataIndex: 'first_name',
+        key: 'first_name',
+      },
+      {
+        title: 'Фамилия',
+        dataIndex: 'last_name',
+        key: 'last_name',
+      },
+      {
+        title: 'Сумма покупок',
+        dataIndex: 'total_purchases',
+        key: 'total_purchases',
+        render: (amount: string) => `${amount} KZT`,
+      },
+    ];
+
+    return (
+      <div>
+        <Title level={4}>Реферальная программа</Title>
+        <div style={{ marginBottom: '20px' }}>
+          <p>Заработано с рефералов: {user?.referral_bonus} KZT</p>
+          <p>Ваш процент с покупок рефералов: {user?.referral_percentage}%</p>
+          {user?.referral_expiry_date && (
+            <p>
+              Срок действия реферальной программы: {' '}
+              <span style={{ 
+                color: new Date(user.referral_expiry_date) > new Date() ? 'green' : 'red' 
+              }}>
+                {new Date(user.referral_expiry_date).toLocaleDateString()}
+              </span>
+            </p>
+          )}
+        </div>
+        
+        {user?.referral_link ? (
+          <div style={{ marginTop: '20px' }}>
+            <Alert
+              message="Ваша реферальная ссылка"
+              description={
+                <div>
+                  <Input.Group compact>
+                    <Input
+                      style={{ width: 'calc(100% - 200px)' }}
+                      value={user.referral_link}
+                      readOnly
+                    />
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        navigator.clipboard.writeText(user.referral_link || '');
+                        message.success('Ссылка скопирована!');
+                      }}
+                      icon={<CopyOutlined />}
+                    >
+                      Копировать ссылку
+                    </Button>
+                  </Input.Group>
+                  <div style={{ marginTop: '10px' }}>
+                    <Tag color={
+                      !user.referral_expiry_date ? 'default' :
+                      new Date(user.referral_expiry_date) > new Date() ? 'success' : 'error'
+                    }>
+                      {user.referral_status}
+                    </Tag>
+                  </div>
+                </div>
+              }
+              type="info"
+              showIcon
+            />
+          </div>
+        ) : (
+          <Button
+            type="primary"
+            onClick={handleGenerateReferralLink}
+            icon={<ShareAltOutlined />}
+            loading={isGeneratingLink}
+          >
+            Создать реферальную ссылку
+          </Button>
+        )}
+        
+        <div style={{ marginTop: '20px' }}>
+          <Alert
+            message="Как это работает?"
+            description={
+              <ul>
+                <li>Создайте свою реферальную ссылку</li>
+                <li>Поделитесь ссылкой с друзьями</li>
+                <li>Когда друг регистрируется по вашей ссылке и совершает покупку, вы получаете {user?.referral_percentage}% от суммы покупки</li>
+                <li>Ссылка действует до {user?.referral_expiry_date ? new Date(user.referral_expiry_date).toLocaleDateString() : 'не ограничено'}</li>
+              </ul>
+            }
+            type="info"
+          />
+        </div>
+
+        <div style={{ marginTop: '20px' }}>
+          <Title level={5}>Ваши рефералы</Title>
+          <Table
+            dataSource={referredUsers}
+            columns={columns}
+            loading={isLoadingReferrals}
+            rowKey="username"
+            pagination={{ pageSize: 5 }}
+            locale={{ emptyText: 'Нет рефералов' }}
+          />
+        </div>
+      </div>
+    );
   };
 
   const renderContent = () => {
@@ -312,54 +440,7 @@ const ProfilePage = () => {
           </div>
         );
       case "referral":
-        return (
-          <div>
-            <Title level={4}>Реферальная программа</Title>
-            <p>Заработано с рефералов: {user.referral_bonus} KZT</p>
-            {user.referral_link ? (
-              <div style={{ marginTop: '20px' }}>
-                <p>Ваша реферальная ссылка:</p>
-                <Input.Group compact>
-                  <Input
-                    style={{ width: 'calc(100% - 200px)' }}
-                    value={user.referral_link}
-                    readOnly
-                  />
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      navigator.clipboard.writeText(user.referral_link);
-                      message.success('Ссылка скопирована!');
-                    }}
-                  >
-                    Копировать ссылку
-                  </Button>
-                </Input.Group>
-              </div>
-            ) : (
-              <Button
-                type="primary"
-                onClick={handleGenerateReferralLink}
-                icon={<ShareAltOutlined />}
-              >
-                Создать реферальную ссылку
-              </Button>
-            )}
-            <div style={{ marginTop: '20px' }}>
-              <Alert
-                message="Как это работает?"
-                description={
-                  <ul>
-                    <li>Создайте свою реферальную ссылку</li>
-                    <li>Поделитесь ссылкой с друзьями</li>
-                    <li>Когда друг регистрируется по вашей ссылке, вы получаете 1500 KZT на баланс</li>
-                  </ul>
-                }
-                type="info"
-              />
-            </div>
-          </div>
-        );
+        return renderReferralContent();
       default:
         return null;
     }

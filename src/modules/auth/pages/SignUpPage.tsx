@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSignUpMutation } from "modules/auth/redux/api";
 import { Form, Input, Button, Select, message } from "antd";
 import { useDispatch } from "react-redux";
@@ -12,6 +12,11 @@ const { Option } = Select;
 const SignUpPage = () => {
   const dispatch = useDispatch();
   const [signUp, { isLoading }] = useSignUpMutation();
+  const location = useLocation();
+
+  // Extract referral code from URL
+  const searchParams = new URLSearchParams(location.search);
+  const referralCode = searchParams.get('ref');
 
   const { data: regions, isLoading: isRegionsLoading } =
     useGetRegionListQuery();
@@ -25,13 +30,19 @@ const SignUpPage = () => {
     }
 
     try {
-      console.log("Sending signup request with data:", { ...values, phone_number: phoneNumber });
+      console.log("Sending signup request with data:", { 
+        ...values, 
+        phone_number: phoneNumber,
+        referral_code: referralCode // Add referral code from URL
+      });
+      
       const response = await signUp({
         ...values,
         phone_number: phoneNumber,
         region: values.region,
-        referral_code: values.referral_code
+        referral_code: referralCode // Add referral code from URL
       });
+      
       console.log("Signup response:", response);
       // @ts-ignore
       const { access: token, refresh: refreshToken } = response.data;
@@ -230,15 +241,18 @@ const SignUpPage = () => {
                     />
                   </Form.Item>
 
-                  <Form.Item
+                  {/* <Form.Item
                     name="referral_code"
-                    label="Реферальный код"
+                    label="Реферальная ссылка"
                   >
                     <Input
-                      placeholder="Введите реферальный код (если есть)"
+                      placeholder="Вставьте реферальную ссылку (если есть)"
                       className="rounded-[10px]"
                     />
-                  </Form.Item>
+                    <div className="mt-2 text-sm text-gray-500">
+                      Если у вас есть реферальная ссылка, вставьте ее полностью (например: http://127.0.0.1:8000/signup?ref=abc123)
+                    </div>
+                  </Form.Item> */}
 
                   <Button
                     type="primary"
