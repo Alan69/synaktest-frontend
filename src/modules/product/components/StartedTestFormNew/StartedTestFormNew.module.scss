@@ -135,12 +135,17 @@
   line-height: normal;
 }
 
-.options {
+.optionsContainer {
   padding: 0 40px;
-  margin-top: 64px;
-  display: flex;
-  flex-direction: column;
   text-align: left;
+  
+  :global(.ant-radio-wrapper) {
+    align-items: flex-start;
+  }
+  
+  :global(.ant-checkbox-wrapper) {
+    align-items: flex-start;
+  }
 }
 
 .option {

@@ -360,108 +360,123 @@ const StartedTestFormNew = ({
 
         <div className={styles.divider} style={{ marginTop: 64 }}></div>
 
-        {currentQuestion?.task_type === 8 ? (
-          <div className={styles.matchingContainer}>
-            <div className={styles.questionText}>{currentQuestion?.text}</div>
-            <div className={styles.matchingTable}>
-              <div className={styles.matchingRow}>
-                <div className={styles.matchingCell}>A)</div>
-                <div className={styles.matchingCell}>{currentQuestion?.text2 || "Loading..."}</div>
-                <div className={styles.matchingCell}>
-                  <select 
-                    className={styles.matchingSelect}
-                    value={
-                      Array.isArray(selectedAnswers[currentQuestion?.id])
-                        ? (selectedAnswers[currentQuestion?.id] as string[]).find((answerId: string) => 
-                            currentQuestion?.options?.findIndex((opt: Option) => opt.id === answerId) < 4
-                          ) || ""
-                        : ""
-                    }
-                    onChange={(e) => {
-                      const existingAnswers = Array.isArray(selectedAnswers[currentQuestion?.id])
-                        ? selectedAnswers[currentQuestion?.id] as string[]
-                        : [];
-                      
-                      // Remove any existing selections from first row (options 1-4)
-                      const otherRowAnswers = existingAnswers.filter(id => 
-                        currentQuestion?.options?.findIndex((opt: Option) => opt.id === id) >= 4
-                      );
-
-                      if (e.target.value) {
-                        handleMultiOptionChange([...otherRowAnswers, e.target.value]);
-                      } else {
-                        handleMultiOptionChange([...otherRowAnswers]);
+        <div className={styles.questionContainer}>
+          <div className={styles.questionText}>{currentQuestion?.text}</div>
+          {currentQuestion?.image && (
+            <div className={styles.imageContainer}>
+              <img src={currentQuestion.image} alt="Question" />
+            </div>
+          )}
+          
+          {currentQuestion?.task_type === 8 ? (
+            <div className={styles.matchingContainer}>
+              <div className={styles.matchingTable}>
+                <div className={styles.matchingRow}>
+                  <div className={styles.matchingCell}>A)</div>
+                  <div className={styles.matchingCell}>{currentQuestion?.text2 || "Loading..."}</div>
+                  <div className={styles.matchingCell}>
+                    <select 
+                      className={styles.matchingSelect}
+                      value={
+                        Array.isArray(selectedAnswers[currentQuestion?.id])
+                          ? (selectedAnswers[currentQuestion?.id] as string[]).find((answerId: string) => 
+                              currentQuestion?.options?.findIndex((opt: Option) => opt.id === answerId) < 4
+                            ) || ""
+                          : ""
                       }
-                    }}
-                  >
-                    <option value="">Выберите ответ</option>
-                    {currentQuestion?.options?.slice(0, 4).map((option: Option, index: number) => (
-                      <option key={option.id} value={option.id}>
-                        {option.text}
-                      </option>
-                    ))}
-                  </select>
+                      onChange={(e) => {
+                        const existingAnswers = Array.isArray(selectedAnswers[currentQuestion?.id])
+                          ? selectedAnswers[currentQuestion?.id] as string[]
+                          : [];
+                        
+                        // Remove any existing selections from first row (options 1-4)
+                        const otherRowAnswers = existingAnswers.filter(id => 
+                          currentQuestion?.options?.findIndex((opt: Option) => opt.id === id) >= 4
+                        );
+
+                        if (e.target.value) {
+                          handleMultiOptionChange([...otherRowAnswers, e.target.value]);
+                        } else {
+                          handleMultiOptionChange([...otherRowAnswers]);
+                        }
+                      }}
+                    >
+                      <option value="">Выберите ответ</option>
+                      {currentQuestion?.options?.slice(0, 4).map((option: Option, index: number) => (
+                        <option key={option.id} value={option.id}>
+                          {option.text}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.matchingRow}>
-                <div className={styles.matchingCell}>B)</div>
-                <div className={styles.matchingCell}>{currentQuestion?.text3 || "Loading..."}</div>
-                <div className={styles.matchingCell}>
-                  <select 
-                    className={styles.matchingSelect}
-                    value={
-                      Array.isArray(selectedAnswers[currentQuestion?.id])
-                        ? (selectedAnswers[currentQuestion?.id] as string[]).find((answerId: string) => 
-                            currentQuestion?.options?.findIndex((opt: Option) => opt.id === answerId) >= 4
-                          ) || ""
-                        : ""
-                    }
-                    onChange={(e) => {
-                      const existingAnswers = Array.isArray(selectedAnswers[currentQuestion?.id])
-                        ? selectedAnswers[currentQuestion?.id] as string[]
-                        : [];
-                      
-                      // Remove any existing selections from second row (options 5-8)
-                      const otherRowAnswers = existingAnswers.filter(id => 
-                        currentQuestion?.options?.findIndex((opt: Option) => opt.id === id) < 4
-                      );
-
-                      if (e.target.value) {
-                        handleMultiOptionChange([...otherRowAnswers, e.target.value]);
-                      } else {
-                        handleMultiOptionChange([...otherRowAnswers]);
+                <div className={styles.matchingRow}>
+                  <div className={styles.matchingCell}>B)</div>
+                  <div className={styles.matchingCell}>{currentQuestion?.text3 || "Loading..."}</div>
+                  <div className={styles.matchingCell}>
+                    <select 
+                      className={styles.matchingSelect}
+                      value={
+                        Array.isArray(selectedAnswers[currentQuestion?.id])
+                          ? (selectedAnswers[currentQuestion?.id] as string[]).find((answerId: string) => 
+                              currentQuestion?.options?.findIndex((opt: Option) => opt.id === answerId) >= 4
+                            ) || ""
+                          : ""
                       }
-                    }}
-                  >
-                    <option value="">Выберите ответ</option>
-                    {currentQuestion?.options?.slice(4, 8).map((option: Option, index: number) => (
-                      <option key={option.id} value={option.id}>
-                        {option.text}
-                      </option>
-                    ))}
-                  </select>
+                      onChange={(e) => {
+                        const existingAnswers = Array.isArray(selectedAnswers[currentQuestion?.id])
+                          ? selectedAnswers[currentQuestion?.id] as string[]
+                          : [];
+                        
+                        // Remove any existing selections from second row (options 5-8)
+                        const otherRowAnswers = existingAnswers.filter(id => 
+                          currentQuestion?.options?.findIndex((opt: Option) => opt.id === id) < 4
+                        );
+
+                        if (e.target.value) {
+                          handleMultiOptionChange([...otherRowAnswers, e.target.value]);
+                        } else {
+                          handleMultiOptionChange([...otherRowAnswers]);
+                        }
+                      }}
+                    >
+                      <option value="">Выберите ответ</option>
+                      {currentQuestion?.options?.slice(4, 8).map((option: Option, index: number) => (
+                        <option key={option.id} value={option.id}>
+                          {option.text}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <>
-            <div className={styles.questionText}>{currentQuestion?.text}</div>
-            {currentQuestion?.img && (
-              <div className={styles.questionImage}>
-                <img
-                  src={currentQuestion.img}
-                  alt="Question Illustration"
-                  className={styles.image}
-                />
-              </div>
-            )}
-            <div className={styles.options}>
+          ) : currentQuestion?.task_type === 6 ? (
+            <div className={styles.optionsContainer}>
+              <Checkbox.Group 
+                value={Array.isArray(selectedAnswers[currentQuestion.id]) ? selectedAnswers[currentQuestion.id] as string[] : []}
+                onChange={(checkedValues: string[]) => {
+                  if (checkedValues.length <= 2) {
+                    handleMultiOptionChange(checkedValues);
+                  }
+                }}
+              >
+                <Space direction="vertical" align="start">
+                  {currentQuestion?.options?.map((option: any) => (
+                    <Checkbox key={option.id} value={option.id} className={styles.option}>
+                      {option.text}
+                    </Checkbox>
+                  ))}
+                </Space>
+              </Checkbox.Group>
+            </div>
+          ) : (
+            <div className={styles.optionsContainer}>
               <Radio.Group 
                 value={currentQuestion?.id ? selectedAnswers[currentQuestion.id] : undefined} 
                 onChange={handleOptionChange}
               >
-                <Space direction="vertical">
+                <Space direction="vertical" align="start">
                   {currentQuestion?.options?.map((option: any) => (
                     <Radio key={option.id} value={option.id} className={styles.option}>
                       {option.text}
@@ -470,8 +485,8 @@ const StartedTestFormNew = ({
                 </Space>
               </Radio.Group>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
       <ModalFinishTestNew
         isOpen={isFinishTestModalOpen}
