@@ -362,9 +362,9 @@ const StartedTestFormNew = ({
 
         <div className={styles.questionContainer}>
           <div className={styles.questionText}>{currentQuestion?.text}</div>
-          {currentQuestion?.image && (
+          {currentQuestion?.img && (
             <div className={styles.imageContainer}>
-              <img src={currentQuestion.image} alt="Question" />
+              <img src={currentQuestion.img} alt="Question" />
             </div>
           )}
           
