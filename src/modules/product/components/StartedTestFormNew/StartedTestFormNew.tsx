@@ -361,6 +361,12 @@ const StartedTestFormNew = ({
         <div className={styles.divider} style={{ marginTop: 64 }}></div>
 
         <div className={styles.questionContainer}>
+          {currentQuestion?.task_type === 10 &&(
+            <div className={styles.sourceText}>
+              <h4>Источник:</h4>
+              <p>{currentQuestion?.source_text}</p>
+            </div>
+          )}
           <div className={styles.questionText}>{currentQuestion?.text}</div>
           {currentQuestion?.img && (
             <div className={styles.imageContainer}>

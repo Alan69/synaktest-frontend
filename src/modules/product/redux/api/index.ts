@@ -33,6 +33,7 @@ export type TQuestion = {
   options: TOption[]
   img?: string
   task_type?: number
+  source_text?: string
 }
 
 export type TOption = {
