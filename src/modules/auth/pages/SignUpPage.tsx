@@ -16,7 +16,7 @@ const SignUpPage = () => {
 
   // Extract referral code from URL
   const searchParams = new URLSearchParams(location.search);
-  const referralCode = searchParams.get('ref');
+  const referralCode = searchParams.get('asdqweg');
 
   const { data: regions, isLoading: isRegionsLoading } =
     useGetRegionListQuery();
