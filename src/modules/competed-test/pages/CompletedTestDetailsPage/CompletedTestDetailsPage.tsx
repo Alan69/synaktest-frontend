@@ -259,13 +259,16 @@ export const CompletedTestDetailsPage = () => {
                   <div className={styles.errorWorkCard__label}>{el.title}</div>
                   <div className={styles.errorWorkCard__question}>
                     {el.questions.map((question, index) => {
-                      const selectedOption = question.selected_option;
-                      const isSelectedOptionCorrect =
-                        selectedOption &&
-                        question.all_options &&
-                        question.all_options.find(
-                          (option) => option.id === selectedOption.id
-                        )?.is_correct;
+                      const selectedOptions = question.selected_option;
+                      const isAnyOptionSelected = selectedOptions !== null && selectedOptions.length > 0;
+                      
+                      // Check if all selected options are correct
+                      const areAllSelectedOptionsCorrect = isAnyOptionSelected &&
+                        selectedOptions.every((selectedOption) =>
+                          question.all_options?.find(
+                            (option) => option.id === selectedOption.id
+                          )?.is_correct
+                        );
 
                       const number = index + 1;
 
@@ -274,9 +277,9 @@ export const CompletedTestDetailsPage = () => {
                           key={question.id}
                           className={cn(
                             styles.errorWorkCard__question__item,
-                            selectedOption === null
+                            !isAnyOptionSelected
                               ? styles.errorWorkCard__question__item__isNull
-                              : isSelectedOptionCorrect
+                              : areAllSelectedOptionsCorrect
                               ? styles.errorWorkCard__question__item__true
                               : styles.errorWorkCard__question__item__false
                           )}

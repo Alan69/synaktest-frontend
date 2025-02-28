@@ -43,7 +43,7 @@ export const ModalWorkOnErrors = ({
             Вопрос - {selectedQuestion.question_text}
           </Typography.Title>
 
-          {selectedQuestion.selected_option === null ? (
+          {selectedQuestion.selected_option === null || selectedQuestion.selected_option.length === 0 ? (
             <Typography.Title level={5}>
               Вы не выбрали вариант ответа!
             </Typography.Title>
@@ -54,8 +54,9 @@ export const ModalWorkOnErrors = ({
           <div className={styles.options}>
             {selectedQuestion?.all_options?.length > 0 ? (
               selectedQuestion.all_options.map((option) => {
-                const isSelected =
-                  selectedQuestion.selected_option?.id === option.id;
+                const isSelected = selectedQuestion.selected_option?.some(
+                  (selected) => selected.id === option.id
+                );
                 const isCorrect = option.is_correct;
 
                 return (
