@@ -41,6 +41,8 @@ function App() {
 
   const handleCompleteTest = useCallback(async () => {
     try {
+      localStorage.setItem('completing_test', 'true');
+      
       const serializedTests = localStorage.getItem('test');
       const selectedAnswers = JSON.parse(localStorage.getItem('selectedAnswers') || '{}');
       const productId = localStorage.getItem('product_id');
@@ -65,24 +67,32 @@ function App() {
         tests,
       };
 
+      message.loading('Отправка результатов теста...', 0);
+
       // @ts-ignore
       const response = await completeTest(completeTestRequest).unwrap();
 
+      message.destroy();
+
       if (response) {
         message.success('Тест успешно завершен.');
-        localStorage.clear();
+        localStorage.removeItem('completing_test');
+        localStorage.removeItem('test');
+        localStorage.removeItem('selectedAnswers');
+        localStorage.removeItem('product_id');
         // @ts-ignore
         clearInterval(intervalRef.current);
         intervalRef.current = null;
-        window.location.href = `/completed-test/${response.completed_test_id}`;
+        
+        navigate(`/completed-test/${response.completed_test_id}`);
       } else {
         message.error('Не удалось завершить тест.');
       }
     } catch (error) {
-      message.error('Ошибка при завершении теста.');
-      console.error('Ошибка завершения теста:', error);
+      console.error('Error completing test:', error);
+      message.error('Произошла ошибка при завершении теста. Пожалуйста, попробуйте еще раз.');
     }
-  }, []);
+  }, [completeTest, navigate]);
 
   useEffect(() => {
     const savedTestIsStarted = localStorage.getItem('testIsStarted');
@@ -152,6 +162,19 @@ function App() {
       getAuthUser();
     }
   }, [token, navigate, getAuthUser, location.pathname]);
+
+  useEffect(() => {
+    // Check if the user was in the middle of completing a test
+    const completingTest = localStorage.getItem('completing_test');
+    
+    if (completingTest === 'true' && !isCompleting) {
+      // Show a message that they should try completing the test again
+      message.warning(
+        'Похоже, что ваш предыдущий тест не был корректно завершен. Пожалуйста, попробуйте завершить тест снова.',
+        10
+      );
+    }
+  }, []);
 
   if (!token) {
     return (

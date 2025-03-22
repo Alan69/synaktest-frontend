@@ -109,8 +109,13 @@ export const productApi = baseApi.injectEndpoints({
         body: {
           product_id,
           tests
-        }
-			}),
+        },
+        timeout: 30000,
+      }),
+      extraOptions: {
+        maxRetries: 3,
+        backoff: (attempt: number) => Math.pow(2, attempt) * 1000,
+      },
 			transformResponse: (response: TCompleteTestResponse) => response,
     }),
 
