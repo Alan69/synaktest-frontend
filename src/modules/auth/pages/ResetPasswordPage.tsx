@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useConfirmPasswordResetMutation } from '../redux/slices/api';
+import { useConfirmPasswordResetMutation } from '../redux/api';
 
 const { Title, Text } = Typography;
 

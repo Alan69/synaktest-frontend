@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useRequestPasswordResetMutation } from '../redux/slices/api';
+import { useRequestPasswordResetMutation } from '../redux/api';
 
 const { Title, Text } = Typography;
 

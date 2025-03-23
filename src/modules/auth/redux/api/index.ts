@@ -19,6 +19,18 @@ type TSignUp = {
   referral_code?: string;
 }
 
+// Password reset types
+export type TPasswordResetRequest = {
+  email: string;
+};
+
+export type TPasswordResetConfirm = {
+  uid: string;
+  token: string;
+  new_password: string;
+  new_password2: string;
+};
+
 type TLoginResponse = {
   data: {
     access: string;
@@ -82,8 +94,28 @@ export const authApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: TTokenResponse) => response,
     }),
+    // Password reset endpoints
+    requestPasswordReset: build.mutation<{ detail: string }, TPasswordResetRequest>({
+      query: (credentials) => ({
+        url: '/password/reset/',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    confirmPasswordReset: build.mutation<{ detail: string }, TPasswordResetConfirm>({
+      query: (credentials) => ({
+        url: '/password/reset/confirm/',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useSignUpMutation, useLoginMutation } = authApi;
+export const { 
+  useSignUpMutation, 
+  useLoginMutation,
+  useRequestPasswordResetMutation,
+  useConfirmPasswordResetMutation 
+} = authApi;
