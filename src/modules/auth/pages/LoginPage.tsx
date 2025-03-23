@@ -106,7 +106,7 @@ const LoginPage = () => {
 
                     <div className="flex flex-wrap justify-between gap-x-10 gap-y-4">
                       <Link
-                        to="/reset-password"
+                        to="/forgot-password"
                         className="text-base hover:text-colorMainPurple"
                       >
                         Забыли пароль?

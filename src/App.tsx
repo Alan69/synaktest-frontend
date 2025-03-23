@@ -3,7 +3,6 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import LoginPage from './modules/auth/pages/LoginPage';
 import useJOSAnimation from './hooks/useJOSAnimation';
 import Home from 'pages/home/Home';
-import ResetPassword from 'pages/common/ResetPassword';
 import { useLazyGetAuthUserQuery } from 'modules/user/redux/slices/api';
 import { useTypedSelector } from 'hooks/useTypedSelector';
 import { message } from 'antd';
@@ -14,6 +13,8 @@ import ProfilePage from 'modules/user/pages/ProfilePage';
 import { UnauthorisedLayout } from 'layouts/UnauthorisedLayout/UnauthorisedLayout';
 import MainLayout from 'layouts/MainLayout/MainLayout';
 import SignUpPage from 'modules/auth/pages/SignUpPage';
+import ForgotPasswordPage from 'modules/auth/pages/ForgotPasswordPage';
+import ResetPasswordPage from 'modules/auth/pages/ResetPasswordPage';
 import { ProductListPage } from 'modules/product/pages/ProductListPage/ProductListPage';
 import ProductDetailsPageNew from 'modules/product/pages/ProductDetailsPageNew/ProductDetailsPageNew';
 
@@ -184,7 +185,8 @@ function App() {
           <Route path='/home' element={<Home />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/signup' element={<SignUpPage />} />
-          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+          <Route path='/reset-password' element={<ResetPasswordPage />} />
           <Route path='*' element={<Home />} />
         </Route>
         <Route path="*" element={<Navigate to="/home" replace />} />
