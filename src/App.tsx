@@ -41,56 +41,6 @@ function App() {
   const [timerInitialized, setTimerInitialized] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to completely reset the timer
-  const resetTimer = useCallback(() => {
-    // Clear existing timer interval
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    
-    // Get the new test time from localStorage
-    const newTestTime = localStorage.getItem('testTime');
-    if (newTestTime) {
-      const newTimeInSeconds = parseInt(newTestTime, 10) * 60;
-      // Update the timeLeft state with the new value
-      setTimeLeft(newTimeInSeconds);
-      // Reset the remaining time in localStorage
-      localStorage.setItem('remainingTime', newTimeInSeconds.toString());
-      console.log('Timer reset to', newTimeInSeconds, 'seconds');
-    } else {
-      // If no test time is set, reset to 0
-      setTimeLeft(0);
-      localStorage.removeItem('remainingTime');
-    }
-  }, []);
-
-  // Monitor for test time changes to reset the timer
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'testTime' && e.newValue) {
-        console.log('Test time changed in storage, resetting timer');
-        resetTimer();
-      }
-    };
-
-    // Add event listener for storage changes
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also check on component mount
-    const testTime = localStorage.getItem('testTime');
-    const savedTestIsStarted = localStorage.getItem('testIsStarted');
-    
-    if (testTime && savedTestIsStarted === 'true') {
-      console.log('Found test time on load, initializing timer');
-      resetTimer();
-    }
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [resetTimer]);
-
   const handleCompleteTest = useCallback(async () => {
     try {
       localStorage.setItem('completing_test', 'true');
@@ -163,80 +113,108 @@ function App() {
     }
   }, [completeTest, navigate]);
 
-  useEffect(() => {
-    const savedTestIsStarted = localStorage.getItem('testIsStarted');
-    const savedTime = localStorage.getItem('remainingTime');
-
-    if (savedTestIsStarted) {
-      setTestIsStarted(JSON.parse(savedTestIsStarted));
-    }
-
-    if (savedTime && JSON.parse(savedTestIsStarted || 'false')) {
-      setTimeLeft(parseInt(savedTime, 10));
-    } else {
-      const initialTime = localStorage.getItem('testTime');
-      if (initialTime && JSON.parse(savedTestIsStarted || 'false')) {
-        const initialTimeInSeconds = parseInt(initialTime, 10) * 60;
-        setTimeLeft(initialTimeInSeconds);
-        localStorage.setItem('remainingTime', initialTimeInSeconds.toString());
-      }
-    }
-
-    setTimerInitialized(true);
-  }, []);
-
   const startTimer = useCallback(() => {
-    if (testIsStarted && timeLeft > 0) {
-      // Always clear any existing interval before starting a new one
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+    // Always clear any existing interval before starting a new one
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    // Simple countdown timer that decrements by 1 second each time
+    intervalRef.current = setInterval(() => {
+      // Get the current time from localStorage to ensure we're always using the latest value
+      const currentTime = parseInt(localStorage.getItem('remainingTime') || '0', 10);
+      
+      if (currentTime <= 0) {
+        clearInterval(intervalRef.current as NodeJS.Timeout);
         intervalRef.current = null;
+        localStorage.removeItem('remainingTime');
+        message.warning('Время вышло!');
+        handleCompleteTest();
+        return;
       }
       
-      // Get the current timestamp to track when we started
-      const startTimestamp = Date.now();
-      const initialTimeLeft = timeLeft;
+      // Decrement by 1 second
+      const newTime = currentTime - 1;
       
-      // Start a new interval
-      intervalRef.current = setInterval(() => {
-        // Calculate elapsed time since timer started
-        const elapsedSeconds = Math.floor((Date.now() - startTimestamp) / 1000);
-        const calculatedTimeLeft = Math.max(0, initialTimeLeft - elapsedSeconds);
-        
-        // Store in localStorage
-        localStorage.setItem('remainingTime', calculatedTimeLeft.toString());
-        
-        // Update state if it's different
-        if (calculatedTimeLeft !== timeLeft) {
-          setTimeLeft(calculatedTimeLeft);
-        }
-        
-        // If time's up
-        if (calculatedTimeLeft <= 0) {
-          clearInterval(intervalRef.current as NodeJS.Timeout);
-          intervalRef.current = null;
-          localStorage.removeItem('remainingTime');
-          message.warning('Время вышло!');
-          handleCompleteTest();
-        }
-      }, 1000);
+      // Always update localStorage first
+      localStorage.setItem('remainingTime', newTime.toString());
       
-      console.log('Timer started with', timeLeft, 'seconds remaining');
-    }
-  }, [testIsStarted, timeLeft, handleCompleteTest]);
+      // Then update React state
+      setTimeLeft(newTime);
+      
+      // Log every minute for debugging
+      if (newTime % 60 === 0) {
+        console.log(`Timer: ${formatTime(newTime)}`);
+      }
+    }, 1000);
+    
+    console.log('Timer started with interval ID:', intervalRef.current);
+  }, [handleCompleteTest]);
 
+  // Initialize timer on mount or when test status changes
   useEffect(() => {
-    if (timerInitialized && testIsStarted && timeLeft > 0) {
-      startTimer();
+    if (timerInitialized && testIsStarted) {
+      const remainingTime = parseInt(localStorage.getItem('remainingTime') || '0', 10);
+      
+      if (remainingTime > 0) {
+        console.log(`Initializing timer with ${formatTime(remainingTime)}`);
+        setTimeLeft(remainingTime);
+        startTimer();
+      } else {
+        // If no remaining time but test is started, initialize from testTime
+        const testTime = localStorage.getItem('testTime');
+        if (testTime) {
+          const initialSeconds = parseInt(testTime, 10) * 60;
+          localStorage.setItem('remainingTime', initialSeconds.toString());
+          setTimeLeft(initialSeconds);
+          console.log(`No remaining time found, setting initial time to ${formatTime(initialSeconds)}`);
+          startTimer();
+        }
+      }
     }
-
+    
     return () => {
       if (intervalRef.current) {
+        console.log('Cleaning up timer interval');
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
   }, [testIsStarted, timerInitialized, startTimer]);
+
+  // Function to completely reset the timer
+  const resetTimer = useCallback(() => {
+    console.log('Reset timer called');
+    
+    // Clear existing timer interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    // Get the test time from localStorage
+    const newTestTime = localStorage.getItem('testTime');
+    if (newTestTime) {
+      const newTimeInSeconds = parseInt(newTestTime, 10) * 60;
+      console.log(`Resetting timer to ${formatTime(newTimeInSeconds)}`);
+      
+      // Reset the remaining time in localStorage
+      localStorage.setItem('remainingTime', newTimeInSeconds.toString());
+      
+      // Update the timeLeft state with the new value
+      setTimeLeft(newTimeInSeconds);
+      
+      // Start the timer
+      setTimeout(() => {
+        startTimer();
+      }, 100);
+    } else {
+      // If no test time is set, reset to 0
+      setTimeLeft(0);
+      localStorage.removeItem('remainingTime');
+    }
+  }, [startTimer]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -266,33 +244,30 @@ function App() {
     }
   }, []);
 
-  // Add a watchdog timer to ensure the main timer is running properly
+  // Load initial test state and timer data on mount
   useEffect(() => {
-    if (testIsStarted && timeLeft > 0 && timerInitialized) {
-      // Create a watchdog timer that checks every 10 seconds if the main timer is running
-      const watchdogTimer = setInterval(() => {
-        const now = Date.now();
-        const lastTimerCheck = parseInt(localStorage.getItem('lastTimerCheck') || '0', 10);
-        const currentTimeLeft = parseInt(localStorage.getItem('remainingTime') || '0', 10);
-        
-        // Store the current check time and timeLeft
-        localStorage.setItem('lastTimerCheck', now.toString());
-        
-        // If more than 20 seconds passed and timeLeft hasn't changed, timer might be stuck
-        if (lastTimerCheck > 0 && (now - lastTimerCheck) > 20000 && timeLeft === currentTimeLeft) {
-          console.warn('Timer appears to be stuck, attempting to restart...');
-          // Force restart by clearing interval and calling startTimer
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
-          startTimer();
-        }
-      }, 10000);
-      
-      return () => clearInterval(watchdogTimer);
+    const savedTestIsStarted = localStorage.getItem('testIsStarted');
+    if (savedTestIsStarted) {
+      setTestIsStarted(JSON.parse(savedTestIsStarted));
     }
-  }, [testIsStarted, timeLeft, timerInitialized, startTimer]);
+    
+    // Initialize the timer state
+    setTimerInitialized(true);
+    
+    // Monitor localStorage changes (for cross-tab consistency)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'testTime' && e.newValue) {
+        console.log('Test time changed in another tab, resetting timer');
+        resetTimer();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [resetTimer]);
 
   if (!token) {
     return (
