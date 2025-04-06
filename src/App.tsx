@@ -193,20 +193,32 @@ function App() {
         intervalRef.current = null;
       }
       
+      // Get the current timestamp to track when we started
+      const startTimestamp = Date.now();
+      const initialTimeLeft = timeLeft;
+      
       // Start a new interval
       intervalRef.current = setInterval(() => {
-        setTimeLeft((prevTime) => {
-          const updatedTime = prevTime - 1;
-          localStorage.setItem('remainingTime', updatedTime.toString());
-          if (updatedTime <= 0) {
-            clearInterval(intervalRef.current as NodeJS.Timeout);
-            intervalRef.current = null;
-            localStorage.removeItem('remainingTime');
-            message.warning('Время вышло!');
-            handleCompleteTest();
-          }
-          return updatedTime;
-        });
+        // Calculate elapsed time since timer started
+        const elapsedSeconds = Math.floor((Date.now() - startTimestamp) / 1000);
+        const calculatedTimeLeft = Math.max(0, initialTimeLeft - elapsedSeconds);
+        
+        // Store in localStorage
+        localStorage.setItem('remainingTime', calculatedTimeLeft.toString());
+        
+        // Update state if it's different
+        if (calculatedTimeLeft !== timeLeft) {
+          setTimeLeft(calculatedTimeLeft);
+        }
+        
+        // If time's up
+        if (calculatedTimeLeft <= 0) {
+          clearInterval(intervalRef.current as NodeJS.Timeout);
+          intervalRef.current = null;
+          localStorage.removeItem('remainingTime');
+          message.warning('Время вышло!');
+          handleCompleteTest();
+        }
       }, 1000);
       
       console.log('Timer started with', timeLeft, 'seconds remaining');

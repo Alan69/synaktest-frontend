@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import styles from "./StartedTestFormNew.module.scss";
 import { Button, Radio, Checkbox, Space } from "antd";
 import { TimerContext } from "App";
@@ -68,7 +68,47 @@ const StartedTestFormNew = ({
     [key: number]: number;
   }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  // Ref for DOM timer element
+  const timerDisplayRef = useRef<HTMLDivElement>(null);
+  // Custom local timer ref 
+  const localTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Function to manually update the timer display
+  const updateTimerDisplay = () => {
+    if (timerDisplayRef.current) {
+      const remainingTime = localStorage.getItem('remainingTime');
+      if (remainingTime) {
+        const seconds = parseInt(remainingTime, 10);
+        timerDisplayRef.current.textContent = `Осталось: ${formatTime(seconds)}`;
+      }
+    }
+  };
 
+  // Setup a local timer that updates the DOM directly
+  useEffect(() => {
+    if (testIsStarted && timerInitialized) {
+      // Clear any existing local timer
+      if (localTimerRef.current) {
+        clearInterval(localTimerRef.current);
+        localTimerRef.current = null;
+      }
+      
+      // Create a backup timer that updates the display every second
+      localTimerRef.current = setInterval(() => {
+        updateTimerDisplay();
+      }, 1000);
+      
+      return () => {
+        if (localTimerRef.current) {
+          clearInterval(localTimerRef.current);
+          localTimerRef.current = null;
+        }
+      };
+    }
+  }, [testIsStarted, timerInitialized]);
+
+  // When the component mounts, ensure the timer is properly initialized with the current test time
   useEffect(() => {
     // Check if this is a newly started test that needs the timer reset
     if (testIsStarted && resetTimer) {
@@ -77,19 +117,46 @@ const StartedTestFormNew = ({
       // Force a small delay to let the component fully mount
       setTimeout(() => {
         resetTimer();
+        updateTimerDisplay(); // Immediately update the display
         
-        // Manually check for timer issues and show a warning if needed
+        // Ensure the timer is running by checking after a delay
         setTimeout(() => {
           const savedTime = localStorage.getItem('remainingTime');
-          if (savedTime && parseInt(savedTime, 10) === timeLeft) {
-            console.warn("Timer might not be moving, trying to restart...");
-            // Attempt to trigger a redraw by forcing a small timeLeft change
-            localStorage.setItem('remainingTime', (parseInt(savedTime, 10) - 1).toString());
+          if (savedTime) {
+            const initialTime = parseInt(savedTime, 10);
+            
+            // Check again after a short delay to see if time changed
+            setTimeout(() => {
+              const currentTime = parseInt(localStorage.getItem('remainingTime') || '0', 10);
+              
+              // If time hasn't changed, the timer might be stuck
+              if (currentTime === initialTime) {
+                console.warn("Timer might not be moving, trying to restart...");
+                
+                // Force a manual update to the timer by changing localStorage directly
+                localStorage.setItem('remainingTime', (currentTime - 1).toString());
+                updateTimerDisplay();
+                
+                // Create immediate manual decrement to kickstart the timer
+                const manualTimer = setInterval(() => {
+                  const remainingTime = parseInt(localStorage.getItem('remainingTime') || '0', 10);
+                  if (remainingTime > 0) {
+                    localStorage.setItem('remainingTime', (remainingTime - 1).toString());
+                    updateTimerDisplay();
+                  } else {
+                    clearInterval(manualTimer);
+                  }
+                }, 1000);
+                
+                // Clear the manual timer after 5 seconds, assuming the main timer kicks in
+                setTimeout(() => clearInterval(manualTimer), 5000);
+              }
+            }, 2000);
           }
         }, 2000);
       }, 100);
     }
-  }, [testIsStarted, resetTimer, timeLeft]);
+  }, [testIsStarted, resetTimer]);
 
   useEffect(() => {
     const savedAnswers = localStorage.getItem("selectedAnswers");
@@ -359,11 +426,13 @@ const StartedTestFormNew = ({
             {"< Алдыңғы сұрақ"}
           </Button>
 
-          {timerInitialized && testIsStarted && timeLeft > 0 && (
-            <div className={cn(styles.timer)}>
-              Осталось: {formatTime(timeLeft)}
-            </div>
-          )}
+          {/* Timer display */}
+          <div 
+            ref={timerDisplayRef}
+            className={cn(styles.timer)}
+          >
+            Осталось: {formatTime(timeLeft)}
+          </div>
 
           <h2 className={styles.currentTestTitle}>{currentTest.title}</h2>
 
