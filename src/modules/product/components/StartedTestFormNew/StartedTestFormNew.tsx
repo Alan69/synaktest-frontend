@@ -451,6 +451,7 @@ const StartedTestFormNew = ({
                       }}
                     >
                       <option value="">Выберите ответ</option>
+                      {/* For task_type=8, never randomize options - always use first 4 options */}
                       {currentQuestion?.options?.slice(0, 4).map((option: Option, index: number) => (
                         <option key={option.id} value={option.id}>
                           {option.text}
@@ -490,6 +491,7 @@ const StartedTestFormNew = ({
                       }}
                     >
                       <option value="">Выберите ответ</option>
+                      {/* For task_type=8, never randomize options - always use second 4 options */}
                       {currentQuestion?.options?.slice(4, 8).map((option: Option, index: number) => (
                         <option key={option.id} value={option.id}>
                           {option.text}

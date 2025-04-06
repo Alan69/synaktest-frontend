@@ -58,10 +58,36 @@ function App() {
 
       const tests: TTest[] = parsedTests.map((test: TTest) => ({
         id: test.id,
-        questions: test.questions.map((question: TQuestion) => ({
-          id: question.id,
-          option_id: selectedAnswers[question.id] || null,
-        })),
+        questions: test.questions.map((question: TQuestion) => {
+          // Get the selected answer
+          const answer = selectedAnswers[question.id];
+          
+          // For task_type=8 (matching questions), ensure we're returning an array
+          if (question.task_type === 8) {
+            // For matching questions, answer should be an array
+            const answerArray = Array.isArray(answer) ? answer : (answer ? [answer] : []);
+            return {
+              id: question.id,
+              option_id: answerArray,
+            };
+          } 
+          // For task_type=6 (multiple choice questions)
+          else if (question.task_type === 6) {
+            // For multiple choice questions, answer should be an array
+            const answerArray = Array.isArray(answer) ? answer : (answer ? [answer] : []);
+            return {
+              id: question.id,
+              option_id: answerArray,
+            };
+          } 
+          // For regular single-answer questions
+          else {
+            return {
+              id: question.id,
+              option_id: answer ? [answer] : [],
+            };
+          }
+        }),
       }));
 
       const completeTestRequest = {
