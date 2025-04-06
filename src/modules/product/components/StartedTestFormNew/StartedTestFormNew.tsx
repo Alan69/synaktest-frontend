@@ -52,6 +52,8 @@ const StartedTestFormNew = ({
     handleCompleteTest,
     // @ts-ignore
     isCompleting,
+    // @ts-ignore
+    resetTimer,
   } = useContext(TimerContext);
   const testDataFromLocalStorage = localStorage.getItem("test");
   const parsedData = testDataFromLocalStorage
@@ -66,6 +68,14 @@ const StartedTestFormNew = ({
     [key: number]: number;
   }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+  useEffect(() => {
+    // Check if this is a newly started test that needs the timer reset
+    if (testIsStarted && resetTimer) {
+      console.log("StartedTestFormNew mounted - resetting timer");
+      resetTimer();
+    }
+  }, [testIsStarted, resetTimer]);
 
   useEffect(() => {
     const savedAnswers = localStorage.getItem("selectedAnswers");

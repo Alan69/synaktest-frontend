@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Layout, Skeleton } from "antd";
+import { Layout, Skeleton, message } from "antd";
 import Title from "antd/es/typography/Title";
 import cn from "classnames";
 
@@ -37,12 +37,23 @@ export const CompletedTestListPage = () => {
   };
 
   useEffect(() => {
+    // Initial refetch when component mounts
     refetch();
-  }, [refetch]);
 
-  useEffect(() => {
-    getAuthUser();
-  }, []);
+    // Check if we just completed a test
+    const testJustCompleted = sessionStorage.getItem("test_just_completed");
+    if (testJustCompleted === "true") {
+      // Clear the flag
+      sessionStorage.removeItem("test_just_completed");
+      
+      // Force a refresh of the data
+      getAuthUser();
+      refetch();
+      
+      // Show a message
+      message.success("Тест успешно завершен. Обновляем список результатов.");
+    }
+  }, [refetch, getAuthUser]);
 
   return (
     <Layout>

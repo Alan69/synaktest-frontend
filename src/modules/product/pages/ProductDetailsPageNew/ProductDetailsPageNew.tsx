@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { message, Spin } from "antd";
@@ -16,11 +16,14 @@ import { useLazyGetAuthUserQuery } from "modules/user/redux/slices/api";
 import { useTypedSelector } from "hooks/useTypedSelector";
 import { ModalNotEnoughBalance } from "modules/product/components/ModalNotEnoughBalance/ModalNotEnoughBalance";
 import { useDispatch } from "react-redux";
+import { TimerContext } from "../../../../App";
 
 const ProductDetailsPageNew = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // Access TimerContext for timer reset functionality
+  const timerContext = useContext(TimerContext);
 
   const { user } = useTypedSelector((state) => state.auth);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -125,6 +128,9 @@ const ProductDetailsPageNew = () => {
     }
 
     try {
+      // Clear any existing timer data before starting new test
+      localStorage.removeItem("remainingTime");
+      
       const response = await startTest({
         product_id: id || "",
         tests_ids,
@@ -137,6 +143,7 @@ const ProductDetailsPageNew = () => {
           message.success("Тест успешно запущен");
           product && setTitle(product?.title);
 
+          // Store test data in localStorage
           const serializedTests = JSON.stringify(response.tests);
           localStorage.setItem("test", serializedTests);
           localStorage.setItem("product_id", id || "");
@@ -146,13 +153,26 @@ const ProductDetailsPageNew = () => {
           );
 
           if (response.time) {
+            // Clear any previous test time and set the new one
             localStorage.setItem("testTime", JSON.stringify(response.time));
-            message.success("Время теста успешно сохранено в localStorage.");
+            
+            // Force the timer to reset by using the TimerContext
+            if (timerContext?.resetTimer) {
+              setTimeout(() => {
+                timerContext.resetTimer();
+                console.log("Timer reset called from handleStart");
+              }, 100);
+            }
+            
+            message.success("Время теста успешно сохранено и таймер запущен.");
           }
 
           setTestIsStarted(authResponse.test_is_started);
 
-          window.location.reload();
+          // Use a short delay before reloading to allow the timer reset to be processed
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
         } else {
           message.error("Не удалось получить данные пользователя.");
         }

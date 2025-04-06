@@ -24,7 +24,8 @@ export const TimerContext = createContext<{
   testIsStarted: boolean;
   timerInitialized: boolean;
   handleCompleteTest?: () => Promise<void>;
-  isCompleting: boolean
+  isCompleting: boolean;
+  resetTimer: () => void;
 } | null>(null);
 
 function App() {
@@ -39,6 +40,56 @@ function App() {
   const [testIsStarted, setTestIsStarted] = useState<boolean>(false);
   const [timerInitialized, setTimerInitialized] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to completely reset the timer
+  const resetTimer = useCallback(() => {
+    // Clear existing timer interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    // Get the new test time from localStorage
+    const newTestTime = localStorage.getItem('testTime');
+    if (newTestTime) {
+      const newTimeInSeconds = parseInt(newTestTime, 10) * 60;
+      // Update the timeLeft state with the new value
+      setTimeLeft(newTimeInSeconds);
+      // Reset the remaining time in localStorage
+      localStorage.setItem('remainingTime', newTimeInSeconds.toString());
+      console.log('Timer reset to', newTimeInSeconds, 'seconds');
+    } else {
+      // If no test time is set, reset to 0
+      setTimeLeft(0);
+      localStorage.removeItem('remainingTime');
+    }
+  }, []);
+
+  // Monitor for test time changes to reset the timer
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'testTime' && e.newValue) {
+        console.log('Test time changed in storage, resetting timer');
+        resetTimer();
+      }
+    };
+
+    // Add event listener for storage changes
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check on component mount
+    const testTime = localStorage.getItem('testTime');
+    const savedTestIsStarted = localStorage.getItem('testIsStarted');
+    
+    if (testTime && savedTestIsStarted === 'true') {
+      console.log('Found test time on load, initializing timer');
+      resetTimer();
+    }
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [resetTimer]);
 
   const handleCompleteTest = useCallback(async () => {
     try {
@@ -92,9 +143,14 @@ function App() {
         localStorage.removeItem('questionIndices');
         
         // Clear timer
-        // @ts-ignore
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+        
+        // Reset timer state
+        setTimeLeft(0);
+        setTestIsStarted(false);
         
         // Navigate to results page
         navigate(`/completed-test/${response.completed_test_id}`);
@@ -211,7 +267,15 @@ function App() {
   }
 
   return (
-    <TimerContext.Provider value={{ timeLeft, formatTime, testIsStarted, timerInitialized, handleCompleteTest, isCompleting }}>
+    <TimerContext.Provider value={{ 
+      timeLeft, 
+      formatTime, 
+      testIsStarted, 
+      timerInitialized, 
+      handleCompleteTest, 
+      isCompleting,
+      resetTimer 
+    }}>
       <Routes>
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />
