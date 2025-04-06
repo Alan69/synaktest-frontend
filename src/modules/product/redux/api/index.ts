@@ -1,4 +1,10 @@
-import baseApi from '../../../../redux/api/index';
+import baseApi, { TAG_TYPES } from '../../../../redux/api/index';
+
+// Define tag types for caching
+export const PRODUCT_API_TAGS = {
+  PRODUCT: 'Product',
+  SUBJECT_LIST: 'SubjectList'
+} as const;
 
 type TProductResponse = {
   id: string;
@@ -76,6 +82,7 @@ export const productApi = baseApi.injectEndpoints({
 				method: 'GET'
 			}),
 			transformResponse: (response: TProductResponse[]) => response,
+      providesTags: ['Product']
     }),
     getProductById: build.query<TProductResponse, string | undefined>({
 			query: (id) => ({
@@ -83,6 +90,7 @@ export const productApi = baseApi.injectEndpoints({
 				method: 'GET'
 			}),
 			transformResponse: (response: TProductResponse) => response,
+      providesTags: ['Product']
     }),
     getSubjectListByProductId: build.query<TSubjectResponse[], string | undefined>({
 			query: (product_id) => ({
@@ -90,6 +98,7 @@ export const productApi = baseApi.injectEndpoints({
 				method: 'GET'
 			}),
 			transformResponse: (response: TSubjectResponse[]) => response,
+      providesTags: ['SubjectList']
     }),
     startTest: build.mutation<TStartTestResponse, TStartTestRequest>({
 			query: ({product_id, tests_ids}) => ({
@@ -101,6 +110,7 @@ export const productApi = baseApi.injectEndpoints({
         }
 			}),
 			transformResponse: (response: TStartTestResponse) => response,
+      invalidatesTags: ['SubjectList']
     }),
     completeTest: build.mutation<TCompleteTestResponse, TCompleteTestRequest>({
 			query: ({product_id, tests}) => ({
@@ -117,8 +127,8 @@ export const productApi = baseApi.injectEndpoints({
         backoff: (attempt: number) => Math.pow(2, attempt) * 1000,
       },
 			transformResponse: (response: TCompleteTestResponse) => response,
+      invalidatesTags: ['SubjectList', 'Product']
     }),
-
   }),
 	overrideExisting: false,
 });

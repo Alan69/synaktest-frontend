@@ -6,23 +6,27 @@ import {
   useGetProductByIdQuery,
   useGetSubjectListByProductIdQuery,
   useStartTestMutation,
+  productApi
 } from "modules/product/redux/api";
+import { TAG_TYPES } from "../../../../redux/api";
 import { CustomCheckbox } from "../../../../components/CustomCheckbox/CustomCheckbox";
 import styles from "./ProductDetailsPageNew.module.scss";
 import StartedTestFormNew from "modules/product/components/StartedTestFormNew/StartedTestFormNew";
 import { useLazyGetAuthUserQuery } from "modules/user/redux/slices/api";
 import { useTypedSelector } from "hooks/useTypedSelector";
 import { ModalNotEnoughBalance } from "modules/product/components/ModalNotEnoughBalance/ModalNotEnoughBalance";
+import { useDispatch } from "react-redux";
 
 const ProductDetailsPageNew = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { user } = useTypedSelector((state) => state.auth);
 
   const { data: product, isLoading: isProductLoading } =
     useGetProductByIdQuery(id);
-  const { data: subjectList, isLoading: isSubjectListLoading } =
+  const { data: subjectList, isLoading: isSubjectListLoading, refetch: refetchSubjectList } =
     useGetSubjectListByProductIdQuery(product?.id);
   const [getAuthUser] = useLazyGetAuthUserQuery();
   const [startTest] = useStartTestMutation();
@@ -167,6 +171,22 @@ const ProductDetailsPageNew = () => {
       setTestIsStarted(JSON.parse(testStarted));
     }
   }, []);
+
+  // Force refetch of subject list when component mounts
+  useEffect(() => {
+    if (product?.id) {
+      // Invalidate cache tags
+      dispatch(
+        productApi.util.invalidateTags([
+          'SubjectList',
+          'Product'
+        ])
+      );
+      
+      // Explicitly refetch the subject list
+      refetchSubjectList();
+    }
+  }, [dispatch, product?.id, refetchSubjectList]);
 
   if (isProductLoading) {
     return (

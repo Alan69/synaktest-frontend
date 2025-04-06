@@ -3,8 +3,12 @@ import { TTokenResponse } from 'modules/auth/redux/api';
 import { authActions } from 'modules/auth/redux/slices/authSlice';
 import { RootState } from 'redux/rootReducer';
 
+// Define tag types
+export const TAG_TYPES = ['Product', 'SubjectList', 'CompletedTest'] as const;
+
 const baseApi = createApi({
   reducerPath: 'api',
+  tagTypes: TAG_TYPES,
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://api.synaqtest.kz/api/',
     prepareHeaders: (headers, { getState }) => {
