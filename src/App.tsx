@@ -186,7 +186,14 @@ function App() {
   }, []);
 
   const startTimer = useCallback(() => {
-    if (testIsStarted && !intervalRef.current && timeLeft > 0) {
+    if (testIsStarted && timeLeft > 0) {
+      // Always clear any existing interval before starting a new one
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
+      // Start a new interval
       intervalRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
           const updatedTime = prevTime - 1;
@@ -201,11 +208,13 @@ function App() {
           return updatedTime;
         });
       }, 1000);
+      
+      console.log('Timer started with', timeLeft, 'seconds remaining');
     }
   }, [testIsStarted, timeLeft, handleCompleteTest]);
 
   useEffect(() => {
-    if (timerInitialized) {
+    if (timerInitialized && testIsStarted && timeLeft > 0) {
       startTimer();
     }
 
@@ -215,7 +224,7 @@ function App() {
         intervalRef.current = null;
       }
     };
-  }, [timeLeft, testIsStarted, timerInitialized, handleCompleteTest, startTimer]);
+  }, [testIsStarted, timerInitialized, startTimer]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -244,6 +253,34 @@ function App() {
       );
     }
   }, []);
+
+  // Add a watchdog timer to ensure the main timer is running properly
+  useEffect(() => {
+    if (testIsStarted && timeLeft > 0 && timerInitialized) {
+      // Create a watchdog timer that checks every 10 seconds if the main timer is running
+      const watchdogTimer = setInterval(() => {
+        const now = Date.now();
+        const lastTimerCheck = parseInt(localStorage.getItem('lastTimerCheck') || '0', 10);
+        const currentTimeLeft = parseInt(localStorage.getItem('remainingTime') || '0', 10);
+        
+        // Store the current check time and timeLeft
+        localStorage.setItem('lastTimerCheck', now.toString());
+        
+        // If more than 20 seconds passed and timeLeft hasn't changed, timer might be stuck
+        if (lastTimerCheck > 0 && (now - lastTimerCheck) > 20000 && timeLeft === currentTimeLeft) {
+          console.warn('Timer appears to be stuck, attempting to restart...');
+          // Force restart by clearing interval and calling startTimer
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          startTimer();
+        }
+      }, 10000);
+      
+      return () => clearInterval(watchdogTimer);
+    }
+  }, [testIsStarted, timeLeft, timerInitialized, startTimer]);
 
   if (!token) {
     return (

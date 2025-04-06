@@ -73,9 +73,23 @@ const StartedTestFormNew = ({
     // Check if this is a newly started test that needs the timer reset
     if (testIsStarted && resetTimer) {
       console.log("StartedTestFormNew mounted - resetting timer");
-      resetTimer();
+      
+      // Force a small delay to let the component fully mount
+      setTimeout(() => {
+        resetTimer();
+        
+        // Manually check for timer issues and show a warning if needed
+        setTimeout(() => {
+          const savedTime = localStorage.getItem('remainingTime');
+          if (savedTime && parseInt(savedTime, 10) === timeLeft) {
+            console.warn("Timer might not be moving, trying to restart...");
+            // Attempt to trigger a redraw by forcing a small timeLeft change
+            localStorage.setItem('remainingTime', (parseInt(savedTime, 10) - 1).toString());
+          }
+        }, 2000);
+      }, 100);
     }
-  }, [testIsStarted, resetTimer]);
+  }, [testIsStarted, resetTimer, timeLeft]);
 
   useEffect(() => {
     const savedAnswers = localStorage.getItem("selectedAnswers");
