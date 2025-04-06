@@ -78,6 +78,7 @@ export const userApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
       transformResponse: (response: TUserData) => response.user_data,
+      providesTags: ['User'],
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;

@@ -4,7 +4,7 @@ import { authActions } from 'modules/auth/redux/slices/authSlice';
 import { RootState } from 'redux/rootReducer';
 
 // Define tag types
-export const TAG_TYPES = ['Product', 'SubjectList', 'CompletedTest'] as const;
+export const TAG_TYPES = ['Product', 'SubjectList', 'CompletedTest', 'User'] as const;
 
 const baseApi = createApi({
   reducerPath: 'api',

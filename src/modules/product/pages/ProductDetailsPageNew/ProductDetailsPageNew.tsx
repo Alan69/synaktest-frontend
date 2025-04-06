@@ -23,13 +23,62 @@ const ProductDetailsPageNew = () => {
   const dispatch = useDispatch();
 
   const { user } = useTypedSelector((state) => state.auth);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // Get the latest user data first to ensure test_is_started is up to date
+  const [getAuthUser, { isSuccess: isUserLoaded }] = useLazyGetAuthUserQuery();
+  const [startTest] = useStartTestMutation();
+
+  useEffect(() => {
+    // Always get the latest user data when component mounts
+    getAuthUser();
+
+    // Check if we just completed a test and landed back here
+    const fromTestCompletion = sessionStorage.getItem("test_just_completed");
+    if (fromTestCompletion === "true") {
+      // Clear the flag
+      sessionStorage.removeItem("test_just_completed");
+      
+      // Force refresh everything
+      dispatch(productApi.util.invalidateTags([
+        'SubjectList' as const,
+        'Product' as const,
+        'User' as const
+      ]));
+      
+      // Trigger a component refresh
+      setRefreshTrigger(prev => prev + 1);
+      
+      // Show message to user
+      message.success("Тест завершен. Теперь вы можете выбрать новый тест.");
+    }
+  }, [dispatch, getAuthUser]);
+
+  // Now query for product and subject data after user data is loaded
   const { data: product, isLoading: isProductLoading } =
     useGetProductByIdQuery(id);
   const { data: subjectList, isLoading: isSubjectListLoading, refetch: refetchSubjectList } =
-    useGetSubjectListByProductIdQuery(product?.id);
-  const [getAuthUser] = useLazyGetAuthUserQuery();
-  const [startTest] = useStartTestMutation();
+    useGetSubjectListByProductIdQuery(product?.id, {
+      // Skip this query if product ID isn't available yet or if the user has a test in progress
+      skip: !product?.id || (user?.test_is_started === true),
+    });
+
+  // Force refetch of subject list when component mounts or when refreshTrigger changes
+  useEffect(() => {
+    if (product?.id && user?.test_is_started === false) {
+      // Invalidate all relevant caches
+      dispatch(
+        productApi.util.invalidateTags([
+          'SubjectList' as const,
+          'Product' as const,
+          'User' as const
+        ])
+      );
+      
+      // Explicitly refetch the subject list
+      refetchSubjectList();
+    }
+  }, [dispatch, product?.id, refetchSubjectList, user?.test_is_started, refreshTrigger]);
 
   const [title, setTitle] = useState("Купить продукт");
   const [selectedRequiredSubjects, setSelectedRequiredSubjects] = useState<{
@@ -171,22 +220,6 @@ const ProductDetailsPageNew = () => {
       setTestIsStarted(JSON.parse(testStarted));
     }
   }, []);
-
-  // Force refetch of subject list when component mounts
-  useEffect(() => {
-    if (product?.id) {
-      // Invalidate cache tags
-      dispatch(
-        productApi.util.invalidateTags([
-          'SubjectList',
-          'Product'
-        ])
-      );
-      
-      // Explicitly refetch the subject list
-      refetchSubjectList();
-    }
-  }, [dispatch, product?.id, refetchSubjectList]);
 
   if (isProductLoading) {
     return (

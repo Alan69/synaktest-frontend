@@ -77,14 +77,26 @@ function App() {
 
       if (response) {
         message.success('Тест успешно завершен.');
+        
+        // Set a flag in sessionStorage to indicate we just completed a test
+        sessionStorage.setItem('test_just_completed', 'true');
+        
+        // Clear all test-related localStorage items
         localStorage.removeItem('completing_test');
         localStorage.removeItem('test');
         localStorage.removeItem('selectedAnswers');
         localStorage.removeItem('product_id');
+        localStorage.removeItem('testIsStarted');
+        localStorage.removeItem('remainingTime');
+        localStorage.removeItem('testTime');
+        localStorage.removeItem('questionIndices');
+        
+        // Clear timer
         // @ts-ignore
         clearInterval(intervalRef.current);
         intervalRef.current = null;
         
+        // Navigate to results page
         navigate(`/completed-test/${response.completed_test_id}`);
       } else {
         message.error('Не удалось завершить тест.');

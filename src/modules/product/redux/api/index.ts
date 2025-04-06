@@ -127,7 +127,17 @@ export const productApi = baseApi.injectEndpoints({
         backoff: (attempt: number) => Math.pow(2, attempt) * 1000,
       },
 			transformResponse: (response: TCompleteTestResponse) => response,
-      invalidatesTags: ['SubjectList', 'Product']
+      invalidatesTags: ['SubjectList', 'Product', 'User'],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            baseApi.util.invalidateTags(['User'])
+          );
+        } catch (err) {
+          console.error('Error completing test', err);
+        }
+      },
     }),
   }),
 	overrideExisting: false,
