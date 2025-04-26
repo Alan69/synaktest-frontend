@@ -13,8 +13,8 @@ type TSignUp = {
   password2: string;
   first_name: string;
   last_name: string;
-  region: string;
-  school: string;
+  region?: string;
+  school?: string;
   phone_number: string;
   referral_code?: string;
 }

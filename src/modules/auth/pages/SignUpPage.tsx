@@ -140,12 +140,6 @@ const SignUpPage = () => {
                   <Form.Item
                     name="region"
                     label="Регион"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Пожалуйста, выберите регион!",
-                      },
-                    ]}
                   >
                     <Select
                       placeholder="Выберите регион"
@@ -164,12 +158,6 @@ const SignUpPage = () => {
                   <Form.Item
                     name="school"
                     label="Школа"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Пожалуйста, укажите школу!",
-                      },
-                    ]}
                   >
                     <Input
                       placeholder="Введите школу"
